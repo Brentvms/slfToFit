@@ -1,4 +1,4 @@
-namespace SlgToFit
+namespace SlfToFit
 {
 	internal static class Program
 	{

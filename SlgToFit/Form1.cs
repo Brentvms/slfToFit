@@ -1,4 +1,4 @@
-namespace SlgToFit
+namespace SlfToFit
 {
 	public partial class Form1 : Form
 	{

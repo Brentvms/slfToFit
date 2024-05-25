@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SlfToFit.SlfEntities
+﻿namespace SlfToFit.SlfEntities
 {
 	internal class Computer(string unit, string serial, string activityType, DateTime dateCode)
 	{

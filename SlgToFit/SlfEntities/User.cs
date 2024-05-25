@@ -2,8 +2,8 @@
 {
 	internal class User(int color, string gender, string type)
 	{
-		public readonly int Color = color;
-		public readonly string Gender = gender;
-		public readonly string Type = type;
+		public readonly int Color = color;			// Color code of user?
+		public readonly string Gender = gender;		// Gender of user
+		public readonly string Type = type;			// User type
 	}
 }

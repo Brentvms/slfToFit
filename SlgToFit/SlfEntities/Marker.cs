@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace SlfToFit.SlfEntities
 		int maximumPower,
 		float maximumSpeed,
 		int minimumHeartrate,
-		int minimumSpeed,
+		float minimumSpeed,
 		int number,
 		int time,
 		int timeAbsolute,
@@ -71,12 +72,12 @@ namespace SlfToFit.SlfEntities
 		public readonly int MaximumPower = maximumPower;                                    // Maximum power output in this lap
 		public readonly float MaximumSpeed = maximumSpeed;                                  // Maximum speed reached in this lap
 		public readonly int MinimumHeartrate = minimumHeartrate;                            // Minimum heartrate in this lap
-		public readonly int MinimumSpeed = minimumSpeed;                                    // Minimum speed in this lap
+		public readonly float MinimumSpeed = minimumSpeed;                                  // Minimum speed in this lap
 		public readonly int Number = number;                                                // Number of this lap
 		public readonly int Time = time;                                                    // Time of this lap
 		public readonly int TimeAbsolute = timeAbsolute;                                    // Absolute time of this lap
 		public readonly string Title = title;                                               // Title of this lap
-		public readonly string Type = type;                                                 // Type of this lap
+		public readonly string Type = type;                                                 // Type of this lap: l = lap, p = pause
 		public readonly int NormalizedPower = normalizedPower;                              // Normalized power output in this lap
 		public readonly float AverageBalance = averageBalance;                              // Average balance in this lap
 		public readonly int PedalingTime = pedalingTime;                                    // Total pedaling time in this lap
@@ -85,5 +86,29 @@ namespace SlfToFit.SlfEntities
 		public readonly float LeftPedalingSmoothness = leftPedalingSmoothness;              // Left pedaling smoothness in this lap
 		public readonly float RightPedalingSmoothness = rightPedalingSmoothness;            // Right pedaling smoothness in this lap
 
+		#region @ToString
+
+		public override string ToString()
+		{
+			return ToString(0);
+		}
+
+		public string ToString(int indentLevel)
+		{
+			const int spacesPerIndent = 4;
+			string indent = new(' ', spacesPerIndent * indentLevel);
+			StringBuilder builder = new();
+			builder.Append(indent).Append(GetType().Name).Append(":\n");
+
+			indent += "    ";
+			FieldInfo[] properties = GetType().GetFields();
+			foreach (FieldInfo property in properties)
+			{
+				builder.Append(indent).Append(property.Name).Append(": ").Append(property.GetValue(this)).Append('\n');
+			}
+			return builder.ToString().TrimEnd('\n', ' ');
+		}
+
+		#endregion
 	}
 }

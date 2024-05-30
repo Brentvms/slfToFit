@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,13 +11,13 @@ namespace SlfToFit.SlfEntities
 		int altitude,
 		int altitudeDifferencesDownhill,
 		int altitudeDifferencesUphill,
-		int cadence,
-		int calories,
+		float cadence,
+		float calories,
 		float distance,
 		float distanceAbsolute,
 		float distanceDownhill,
 		float distanceUphill,
-		int heartrate,
+		float heartrate,
 		float incline,
 		float latitude,
 		float longitude,
@@ -37,7 +38,7 @@ namespace SlfToFit.SlfEntities
 		int timeInIntensityZone3,
 		int timeInIntensityZone4,
 		int timeAboveIntensityZones,
-		int normalizedPower,
+		float normalizedPower,
 		float rightBalance,
 		float leftBalance,
 		int timeInPowerZone1,
@@ -55,13 +56,13 @@ namespace SlfToFit.SlfEntities
 		public readonly int Altitude = altitude;                                            // Altitude of the activity
 		public readonly int AltitudeDifferencesDownhill = altitudeDifferencesDownhill;      // Differences in altitude downhill
 		public readonly int AltitudeDifferencesUphill = altitudeDifferencesUphill;          // Differences in altitude uphill
-		public readonly int Cadence = cadence;                                              // Cadence
-		public readonly int Calories = calories;                                            // Calories burned
+		public readonly float Cadence = cadence;                                            // Cadence
+		public readonly float Calories = calories;                                          // Calories burned
 		public readonly float Distance = distance;                                          // Total distance covered
 		public readonly float DistanceAbsolute = distanceAbsolute;                          // Absolute distance covered
 		public readonly float DistanceDownhill = distanceDownhill;                          // Distance covered downhill
 		public readonly float DistanceUphill = distanceUphill;                              // Distance covered uphill
-		public readonly int Heartrate = heartrate;                                          // Heart rate
+		public readonly float Heartrate = heartrate;                                        // Heart rate
 		public readonly float Incline = incline;                                            // Incline
 		public readonly float Latitude = latitude;                                          // Latitude
 		public readonly float Longitude = longitude;                                        // Longitude
@@ -82,7 +83,7 @@ namespace SlfToFit.SlfEntities
 		public readonly int TimeInIntensityZone3 = timeInIntensityZone3;                    // Time in intensity zone 3
 		public readonly int TimeInIntensityZone4 = timeInIntensityZone4;                    // Time in intensity zone 4
 		public readonly int TimeAboveIntensityZones = timeAboveIntensityZones;              // Time above intensity zones
-		public readonly int NormalizedPower = normalizedPower;                              // Normalized power
+		public readonly float NormalizedPower = normalizedPower;                            // Normalized power
 		public readonly float RightBalance = rightBalance;                                  // Right balance
 		public readonly float LeftBalance = leftBalance;                                    // Left balance
 		public readonly int TimeInPowerZone1 = timeInPowerZone1;                            // Time in power zone 1
@@ -96,5 +97,30 @@ namespace SlfToFit.SlfEntities
 		public readonly bool UseForChart = useForChart;                                     // Indicates if data is used for chart
 		public readonly bool UseForTrack = useForTrack;                                     // Indicates if data is used for tracking
 		public readonly int SpeedTime = speedTime;                                          // Speed time
+
+		#region @ToString
+
+		public override string ToString()
+		{
+			return ToString(0);
+		}
+
+		public string ToString(int indentLevel)
+		{
+			const int spacesPerIndent = 4;
+			string indent = new(' ', spacesPerIndent * indentLevel);
+			StringBuilder builder = new();
+			builder.Append(indent).Append(GetType().Name).Append(":\n");
+
+			indent += "    ";
+			FieldInfo[] properties = GetType().GetFields();
+			foreach (FieldInfo property in properties)
+			{
+				builder.Append(indent).Append(property.Name).Append(": ").Append(property.GetValue(this)).Append('\n');
+			}
+			return builder.ToString().TrimEnd('\n', ' ');
+		}
+
+		#endregion
 	}
 }

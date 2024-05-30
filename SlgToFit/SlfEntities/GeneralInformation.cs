@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SlfToFit.SlfEntities
 {
@@ -70,7 +67,7 @@ namespace SlfToFit.SlfEntities
 		int minimumPower,
 		float minimumRiseRate,
 		float minimumSpeed,
-		int minimumTemperature,
+		float minimumTemperature,
 		string name,
 		int pauseTime,
 		int powerZone1Start,
@@ -109,13 +106,13 @@ namespace SlfToFit.SlfEntities
 		int wheelSize,
 		int wind,
 		int workinKJ,
-		int best5KTime,
-		int best5KEntry,
-		int best20minPower,
-		int best20minPowerEntry,
-		int powerNP,
-		int powerTSS,
-		int powerFTP,
+		float best5KTime,
+		float best5KEntry,
+		float best20minPower,
+		float best20minPowerEntry,
+		float powerNP,
+		float powerTSS,
+		float powerFTP,
 		int pedalingTime,
 		float pedalingIndex,
 		float averageBalanceRight,
@@ -129,7 +126,7 @@ namespace SlfToFit.SlfEntities
 		float averagePowerCalc,
 		string[] activityStatus,
 		bool activityTrackerDayComplete,
-		Dictionary<string, int> sharingInfo)
+		Dictionary<string, ulong> sharingInfo)
 	{
 		public readonly User User = user;                                                   // User that recorded the activity
 		public readonly string Sport = sport;                                               // Type of sport that is recorded
@@ -194,7 +191,7 @@ namespace SlfToFit.SlfEntities
 		public readonly int MinimumPower = minimumPower;                                    // Minimum power
 		public readonly float MinimumRiseRate = minimumRiseRate;                            // Minimum rise rate
 		public readonly float MinimumSpeed = minimumSpeed;                                  // Minimum speed
-		public readonly int MinimumTemperature = minimumTemperature;                        // Minimum temperature
+		public readonly float MinimumTemperature = minimumTemperature;                      // Minimum temperature
 		public readonly string Name = name;                                                 // Name of the activity
 		public readonly int PauseTime = pauseTime;                                          // Total pause time
 		public readonly int PowerZone1Start = powerZone1Start;                              // Start of power zone 1
@@ -233,15 +230,15 @@ namespace SlfToFit.SlfEntities
 		public readonly int WheelSize = wheelSize;                                          // Size of the wheel
 		public readonly int Wind = wind;                                                    // Wind conditions
 		public readonly int WorkinKJ = workinKJ;                                            // Work in kilojoules
-		public readonly int Best5KTime = best5KTime;                                        // Best 5K time
-		public readonly int Best5KEntry = best5KEntry;                                      // Entry for best 5K time
-		public readonly int Best20minPower = best20minPower;                                // Best 20-minute power
-		public readonly int Best20minPowerEntry = best20minPowerEntry;                      // Entry for best 20-minute power
-		public readonly int PowerNP = powerNP;                                              // Normalized power
-		public readonly int PowerTSS = powerTSS;                                            // Training stress score
-		public readonly int PowerFTP = powerFTP;                                            // Functional threshold power
-		public readonly int PedalingTime = pedalingTime;                                    // Total pedaling time
-		public readonly float PedalingIndex = pedalingIndex;                                // Pedaling index
+		public readonly float Best5KTime = best5KTime;                                      // Best 5K time
+		public readonly float Best5KEntry = best5KEntry;                                    // Entry for best 5K time
+		public readonly float Best20minPower = best20minPower;                              // Best 20-minute power
+		public readonly float Best20minPowerEntry = best20minPowerEntry;                    // Entry for best 20-minute power
+		public readonly float PowerNP = powerNP;                                            // Normalized power
+		public readonly float PowerTSS = powerTSS;                                          // Training stress score
+		public readonly float PowerFTP = powerFTP;                                          // Functional threshold power
+		public readonly int PedalingTime = pedalingTime;									// Total pedaling time
+		public readonly float PedalingIndex = pedalingIndex;								// Pedaling index
 		public readonly float AverageBalanceRight = averageBalanceRight;                    // Average balance - right
 		public readonly float AverageBalanceLeft = averageBalanceLeft;                      // Average balance - left
 		public readonly float PowerIF = powerIF;                                            // Intensity factor
@@ -253,6 +250,38 @@ namespace SlfToFit.SlfEntities
 		public readonly float AveragePowerCalc = averagePowerCalc;                          // Calculated average power
 		public readonly string[] ActivityStatus = activityStatus;                           // Status of the activity
 		public readonly bool ActivityTrackerDayComplete = activityTrackerDayComplete;       // Indicates if the activity tracker day is complete
-		public readonly Dictionary<string, int> SharingInfo = sharingInfo;                  // Information about sharing
+		public readonly Dictionary<string, ulong> SharingInfo = sharingInfo;                // Information about sharing
+
+		#region @ToString
+
+		public override string ToString()
+		{
+			return ToString(0);
+		}
+
+		public string ToString(int indentLevel)
+		{
+			const int spacesPerIndent = 4;
+			string indent = new(' ', spacesPerIndent * indentLevel);
+			StringBuilder builder = new();
+			builder.Append(indent).Append(GetType().Name).Append(":\n");
+
+			indent += "    ";
+			FieldInfo[] properties = GetType().GetFields();
+			foreach (FieldInfo property in properties)
+			{
+				if (property.Name == "User")
+				{
+					builder.Append(User.ToString(indentLevel + 1)).Append("\n");
+				}
+				else
+				{
+					builder.Append(indent).Append(property.Name).Append(": ").Append(property.GetValue(this)).Append('\n');
+				}
+			}
+			return builder.ToString().TrimEnd('\n', ' ');
+		}
+
+		#endregion
 	}
 }

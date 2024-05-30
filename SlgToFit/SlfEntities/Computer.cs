@@ -1,4 +1,7 @@
-﻿namespace SlfToFit.SlfEntities
+﻿using System.Reflection;
+using System.Text;
+
+namespace SlfToFit.SlfEntities
 {
 	internal class Computer(string unit, string serial, string activityType, DateTime dateCode)
 	{
@@ -15,5 +18,30 @@
 				default: return "Sigma Cycling Computer";
 			}
 		}
+
+		#region @ToString
+
+		public override string ToString()
+		{
+			return ToString(0);
+		}
+
+		public string ToString(int indentLevel)
+		{
+			const int spacesPerIndent = 4;
+			string indent = new(' ', spacesPerIndent * indentLevel);
+			StringBuilder builder = new();
+			builder.Append(indent).Append(GetType().Name).Append(":\n");
+
+			indent += "    ";
+			FieldInfo[] properties = GetType().GetFields();
+			foreach (FieldInfo property in properties)
+			{
+				builder.Append(indent).Append(property.Name).Append(": ").Append(property.GetValue(this)).Append('\n');
+			}
+			return builder.ToString().TrimEnd('\n', ' ');
+		}
+
+		#endregion
 	}
 }

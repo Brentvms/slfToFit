@@ -5,18 +5,28 @@ namespace SlfToFit.SlfEntities
 {
 	public class Computer(string unit, string serial, string activityType, DateTime dateCode)
 	{
-		public readonly string Unit = UnitNameMap(unit);		// Model cycling computer
-		public readonly string Serial = serial;					// Serial number
-		public readonly string ActivityType = activityType;		// Type of activity recorded
-		public readonly DateTime DateCode = dateCode;			// DateTime which the activity was recorded
+		public readonly string Unit = UnitNameMap(unit);			// Model cycling computer
+		public readonly ushort ProductId = UnitProductIdMap(unit);	// Product id for in .fit file
+		public readonly string Serial = serial;						// Serial number
+		public readonly string ActivityType = activityType;			// Type of activity recorded
+		public readonly DateTime DateCode = dateCode;				// DateTime which the activity was recorded
 
 		private static string UnitNameMap(string unit)
 		{
-			switch (unit)
+			return unit switch
 			{
-				case "rox110": return "ROX GPS 11.0";
-				default: return "Sigma Cycling Computer";
-			}
+				"rox110" => "ROX GPS 11.0",
+				_ => "Sigma Cycling Computer",
+			};
+		}
+
+		private static ushort UnitProductIdMap(string unit)
+		{
+			return unit switch
+			{
+				"rox110" => 41,
+				_ => 0
+			};
 		}
 
 		#region @ToString

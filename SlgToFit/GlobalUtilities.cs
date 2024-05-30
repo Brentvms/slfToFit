@@ -2,7 +2,7 @@
 
 namespace SlfToFit
 {
-	internal static class GlobalUtilities
+	public static class GlobalUtilities
 	{
 		public static DateTime SlgDateToDateTime(string slgDate)
 		{

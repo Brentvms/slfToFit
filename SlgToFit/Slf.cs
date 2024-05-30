@@ -2,7 +2,7 @@
 
 namespace SlfToFit
 {
-	internal class Slf(DateTime fileDate, int revision, Computer computer, GeneralInformation generalInformation, Entry[] entries, Marker[] markers)
+	public class Slf(DateTime fileDate, int revision, Computer computer, GeneralInformation generalInformation, Entry[] entries, Marker[] markers)
 	{
 		public readonly DateTime FileDate = fileDate;									// Date on which the file was exported
 		public readonly int Revision = revision;										// ??

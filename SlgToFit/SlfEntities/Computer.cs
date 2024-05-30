@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SlfToFit.SlfEntities
 {
-	internal class Computer(string unit, string serial, string activityType, DateTime dateCode)
+	public class Computer(string unit, string serial, string activityType, DateTime dateCode)
 	{
 		public readonly string Unit = UnitNameMap(unit);		// Model cycling computer
 		public readonly string Serial = serial;					// Serial number

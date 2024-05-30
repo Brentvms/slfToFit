@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SlfToFit.SlfEntities
 {
-	internal class GeneralInformation(
+	public class GeneralInformation(
 		User user,
 		string sport,
 		string gUID,

@@ -4,7 +4,7 @@ using SlfToFit.SlfEntities;
 
 namespace SlfToFit
 {
-	internal static class SlfParser
+	public static class SlfParser
 	{
 		public static Slf? ParseSlf(string filePath)
 		{

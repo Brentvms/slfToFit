@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SlfToFit.SlfEntities
 {
-	internal class Marker(
+	public class Marker(
 		int altitudeDownhill,
 		int altitudeUphill,
 		int averageAltitude,

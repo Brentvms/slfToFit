@@ -70,13 +70,13 @@ namespace SlfToFit.SlfEntities
 		public readonly int MinimumHeartrate = minimumHeartrate;                            // Minimum heartrate in this lap
 		public readonly float MinimumSpeed = minimumSpeed;                                  // Minimum speed in this lap
 		public readonly int Number = number;                                                // Number of this lap
-		public readonly int Time = time;                                                    // Time of this lap
-		public readonly int TimeAbsolute = timeAbsolute;                                    // Absolute time of this lap
+		public readonly float Time = time/100;                                              // Time of this lap
+		public readonly float TimeAbsolute = timeAbsolute/100;                              // Time up and until this lap
 		public readonly string Title = title;                                               // Title of this lap
 		public readonly string Type = type;                                                 // Type of this lap: l = lap, p = pause
 		public readonly int NormalizedPower = normalizedPower;                              // Normalized power output in this lap
 		public readonly float AverageBalance = averageBalance;                              // Average balance in this lap
-		public readonly int PedalingTime = pedalingTime;                                    // Total pedaling time in this lap
+		public readonly float PedalingTime = pedalingTime/100;                              // Total pedaling time in this lap
 		public readonly float LeftTorqueEffectivity = leftTorqueEffectivity;                // Left torque effectivity in this lap
 		public readonly float RightTorqueEffectivity = rightTorqueEffectivity;              // Right torque effectivity in this lap
 		public readonly float LeftPedalingSmoothness = leftPedalingSmoothness;              // Left pedaling smoothness in this lap

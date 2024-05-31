@@ -13,11 +13,13 @@ namespace SlfToFit
 			FileStream? fitDest = null;
 			Encode? encoder = null;
 			Dynastream.Fit.DateTime timeCreated = new(System.DateTime.Now);
+			Dynastream.Fit.DateTime timeStarted = new(slf.GeneralInformation.StartDate);
 			CreateDeveloperDataFields();
 
 			// all messages
 			FileIdMesg fileIdMesg = CreateFileIdMesg(slf, timeCreated);
-			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformation(slf);
+			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
+			ActivityMesg activityMesg = CreateActivityMesg(slf);
 
 			try
 			{
@@ -33,6 +35,7 @@ namespace SlfToFit
 
 				// write other general information
 				encoder.Write(deviceInfoMesg);
+				encoder.Write(activityMesg);
 			}
 			catch(Exception ex)
 			{
@@ -98,7 +101,7 @@ namespace SlfToFit
 			}
 		}
 
-		private DeviceInfoMesg CreateDeviceInformation(Slf slf)
+		private DeviceInfoMesg CreateDeviceInformationMesg(Slf slf)
 		{
 			DeviceInfoMesg devInfoMesg = new();
 			devInfoMesg.SetManufacturer(Manufacturer.Sigmasport);
@@ -110,6 +113,16 @@ namespace SlfToFit
 			serialNumberField.SetValue(Encoding.UTF8.GetBytes(slf.Computer.Serial));
 
 			return devInfoMesg;
+		}
+
+		private ActivityMesg CreateActivityMesg(Slf slf)
+		{
+			ActivityMesg activityMesg = new();
+			activityMesg.SetNumSessions(1);
+			activityMesg.SetTotalTimerTime(slf.GeneralInformation.ExcerciseTime);
+			activityMesg.SetEvent(Event.Activity);
+			activityMesg.SetEventType(EventType.Stop);
+			return activityMesg;
 		}
 	}
 }

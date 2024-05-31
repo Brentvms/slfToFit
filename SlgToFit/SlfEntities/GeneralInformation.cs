@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Dynastream.Fit;
+using System.Reflection;
 using System.Text;
 
 namespace SlfToFit.SlfEntities
@@ -84,7 +85,7 @@ namespace SlfToFit.SlfEntities
 		int trainingTimeUphill,
 		int samplingRate,
 		int shoulderWidth,
-		DateTime startDate,
+		System.DateTime startDate,
 		bool statistic,
 		int timeInIntensityZone1,
 		int timeInIntensityZone2,
@@ -129,7 +130,7 @@ namespace SlfToFit.SlfEntities
 		Dictionary<string, ulong> sharingInfo)
 	{
 		public readonly User User = user;                                                   // User that recorded the activity
-		public readonly string Sport = sport;                                               // Type of sport that is recorded
+		public readonly Sport Sport = SportMap(sport);                                      // Type of sport that is recorded
 		public readonly string GUID = gUID;                                                 // GUID of the activity
 		public readonly int Age = age;                                                      // Age of the user
 		public readonly int AltitudeDifferencesDownhill = altitudeDifferencesDownhill;      // Differences in altitude downhill
@@ -208,7 +209,7 @@ namespace SlfToFit.SlfEntities
 		public readonly float TrainingTimeUphill = trainingTimeUphill/100;                  // Training time uphill
 		public readonly int SamplingRate = samplingRate;                                    // Sampling rate
 		public readonly int ShoulderWidth = shoulderWidth;                                  // Shoulder width of the user
-		public readonly DateTime StartDate = startDate;                                     // Start date of the activity
+		public readonly System.DateTime StartDate = startDate;                              // Start date of the activity
 		public readonly bool Statistic = statistic;                                         // Indicates if it's a statistical activity
 		public readonly float TimeInIntensityZone1 = timeInIntensityZone1/100;              // Time in intensity zone 1
 		public readonly float TimeInIntensityZone2 = timeInIntensityZone2/100;              // Time in intensity zone 2
@@ -251,6 +252,15 @@ namespace SlfToFit.SlfEntities
 		public readonly string[] ActivityStatus = activityStatus;                           // Status of the activity
 		public readonly bool ActivityTrackerDayComplete = activityTrackerDayComplete;       // Indicates if the activity tracker day is complete
 		public readonly Dictionary<string, ulong> SharingInfo = sharingInfo;                // Information about sharing
+
+		private static Sport SportMap(string sport)
+		{
+			return sport switch
+			{
+				"racing_bycicle" => Dynastream.Fit.Sport.Cycling,
+				_ => throw new NotImplementedException("Sport is not implemented in mapping")
+			};
+		}
 
 		#region @ToString
 

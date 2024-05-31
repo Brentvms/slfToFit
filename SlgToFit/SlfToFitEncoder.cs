@@ -1,4 +1,5 @@
 ﻿using Dynastream.Fit;
+using SlfToFit.SlfEntities;
 using System.Text;
 
 namespace SlfToFit
@@ -20,6 +21,7 @@ namespace SlfToFit
 			FileIdMesg fileIdMesg = CreateFileIdMesg(slf, timeCreated);
 			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
 			ActivityMesg activityMesg = CreateActivityMesg(slf);
+			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted);
 
 			try
 			{
@@ -36,6 +38,7 @@ namespace SlfToFit
 				// write other general information
 				encoder.Write(deviceInfoMesg);
 				encoder.Write(activityMesg);
+				encoder.Write(sessionMesg);
 			}
 			catch(Exception ex)
 			{
@@ -88,7 +91,6 @@ namespace SlfToFit
 			serialNumberFieldDescriptionMesg.SetFieldDefinitionNumber(1);
 			serialNumberFieldDescriptionMesg.SetFitBaseTypeId(FitBaseType.String);
 			serialNumberFieldDescriptionMesg.SetFieldName(0, "serialnumber");
-			serialNumberFieldDescriptionMesg.SetUnits(0, "null");
 			DeveloperFields.Add("serialnumber", serialNumberFieldDescriptionMesg);
 		}
 
@@ -119,10 +121,30 @@ namespace SlfToFit
 		{
 			ActivityMesg activityMesg = new();
 			activityMesg.SetNumSessions(1);
-			activityMesg.SetTotalTimerTime(slf.GeneralInformation.ExcerciseTime);
+			activityMesg.SetTotalTimerTime(slf.GeneralInformation.TrainingTime);
 			activityMesg.SetEvent(Event.Activity);
 			activityMesg.SetEventType(EventType.Stop);
+
+			// set guid for activity
+			DeveloperField guidField = new(DeveloperFields["guid"], DeveloperDataIdMesg);
+			activityMesg.SetDeveloperField(guidField);
+			guidField.SetValue(Encoding.UTF8.GetBytes(slf.GeneralInformation.GUID));
+
 			return activityMesg;
+		}
+
+		private SessionMesg CreateSessionMesg(Slf slf, Dynastream.Fit.DateTime startTime)
+		{
+			SessionMesg sessionMesg = new();
+			sessionMesg.SetTotalElapsedTime(slf.GeneralInformation.ExcerciseTime);
+			sessionMesg.SetStartTime(startTime);
+			sessionMesg.SetTotalTimerTime(slf.GeneralInformation.TrainingTime);
+			sessionMesg.SetTotalDistance(slf.GeneralInformation.Distance);
+			sessionMesg.SetSport(slf.GeneralInformation.Sport);
+			sessionMesg.SetEvent(Event.Session);
+			sessionMesg.SetEventType(EventType.Stop);
+			sessionMesg.SetNumLaps(slf.NumLaps);
+			return sessionMesg;
 		}
 	}
 }

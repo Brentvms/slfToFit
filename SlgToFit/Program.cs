@@ -15,7 +15,8 @@ namespace SlfToFit
 
 			// test code for quick encode. NOT FOR PRODUCTION
 			Slf? slf = SlfParser.ParseSlf("C:\\Users\\kriek\\source\\repos\\VincentKriek\\slgToFit\\Activities\\2024_04_06__13_08.slf");
-			SlfToFitEncoder.Encode(slf, "C:\\Users\\kriek\\Downloads\\test.fit");
+			SlfToFitEncoder encoder = new SlfToFitEncoder();
+			encoder.Encode(slf, "C:\\Users\\kriek\\Downloads\\test.fit");
 		}
 	}
 }

@@ -56,7 +56,7 @@ namespace SlfToFit.SlfEntities
 		public readonly string Description = description;                                   // Description of this lap
 		public readonly float Distance = distance;                                          // Total distance covered in this lap
 		public readonly float DistanceAbsolute = distanceAbsolute;                          // Absolute distance covered in this lap
-		public readonly int Duration = duration;                                            // Duration of this lap
+		public readonly float Duration = duration/100f;                                      // Duration of marker. Only for pauses
 		public readonly bool FastLap = fastLap;                                             // Indicates if it's the fastest lap
 		public readonly float Latitude = latitude;                                          // Latitude for this lap
 		public readonly float Longitude = longitude;                                        // Longitude for this lap
@@ -70,17 +70,19 @@ namespace SlfToFit.SlfEntities
 		public readonly int MinimumHeartrate = minimumHeartrate;                            // Minimum heartrate in this lap
 		public readonly float MinimumSpeed = minimumSpeed;                                  // Minimum speed in this lap
 		public readonly int Number = number;                                                // Number of this lap
-		public readonly float Time = time/100;                                              // Time of this lap
-		public readonly float TimeAbsolute = timeAbsolute/100;                              // Time up and until this lap
+		public readonly float Time = time/100f;                                              // Time of this lap
+		public readonly float TimeAbsolute = timeAbsolute/100f;                              // Time up and until this lap
 		public readonly string Title = title;                                               // Title of this lap
 		public readonly string Type = type;                                                 // Type of this lap: l = lap, p = pause
 		public readonly int NormalizedPower = normalizedPower;                              // Normalized power output in this lap
 		public readonly float AverageBalance = averageBalance;                              // Average balance in this lap
-		public readonly float PedalingTime = pedalingTime/100;                              // Total pedaling time in this lap
+		public readonly float PedalingTime = pedalingTime/100f;                              // Total pedaling time in this lap
 		public readonly float LeftTorqueEffectivity = leftTorqueEffectivity;                // Left torque effectivity in this lap
 		public readonly float RightTorqueEffectivity = rightTorqueEffectivity;              // Right torque effectivity in this lap
 		public readonly float LeftPedalingSmoothness = leftPedalingSmoothness;              // Left pedaling smoothness in this lap
 		public readonly float RightPedalingSmoothness = rightPedalingSmoothness;            // Right pedaling smoothness in this lap
+
+		public float RelativeStartingTime { get { return TimeAbsolute - Time; } }
 
 		#region @ToString
 

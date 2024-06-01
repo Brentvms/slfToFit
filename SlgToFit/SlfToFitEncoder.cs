@@ -1,5 +1,6 @@
 ﻿using Dynastream.Fit;
 using SlfToFit.SlfEntities;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 
 namespace SlfToFit
@@ -22,6 +23,7 @@ namespace SlfToFit
 			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
 			ActivityMesg activityMesg = CreateActivityMesg(slf);
 			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted);
+			LapMesg[] lapMesgs = CreateLapMesgs(slf, timeStarted);
 
 			try
 			{
@@ -39,6 +41,10 @@ namespace SlfToFit
 				encoder.Write(deviceInfoMesg);
 				encoder.Write(activityMesg);
 				encoder.Write(sessionMesg);
+				foreach (var lap in lapMesgs)
+				{
+					encoder.Write(lap);
+				}
 			}
 			catch(Exception ex)
 			{
@@ -143,8 +149,27 @@ namespace SlfToFit
 			sessionMesg.SetSport(slf.GeneralInformation.Sport);
 			sessionMesg.SetEvent(Event.Session);
 			sessionMesg.SetEventType(EventType.Stop);
-			sessionMesg.SetNumLaps(slf.NumLaps);
+			sessionMesg.SetNumLaps((ushort)slf.Laps.Length);
 			return sessionMesg;
+		}
+
+		private LapMesg[] CreateLapMesgs(Slf slf, Dynastream.Fit.DateTime startingTime)
+		{
+			return slf.Laps.Select(marker => CreateLapMesg(marker, startingTime, slf)).ToArray();
+		}
+
+		private LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf)
+		{
+			LapMesg lapMesg = new();
+			lapMesg.SetTotalElapsedTime(lap.Time + slf.GetLapTimePaused(lap));
+			lapMesg.SetStartTime(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelativeStartingTime));
+			lapMesg.SetTotalTimerTime(lap.Time);
+			lapMesg.SetTotalDistance(lap.Distance);
+			lapMesg.SetEvent(Event.Lap);
+			lapMesg.SetEventType(EventType.Stop);
+			lapMesg.SetSport(slf.GeneralInformation.Sport);
+			lapMesg.SetLapTrigger(lap.TimeAbsolute == slf.GeneralInformation.TrainingTime ? LapTrigger.SessionEnd : LapTrigger.Distance);
+			return lapMesg;
 		}
 	}
 }

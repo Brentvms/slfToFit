@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace SlfToFit
 {
 	public static class Program
@@ -8,13 +10,12 @@ namespace SlfToFit
 		[STAThread]
 		static void Main()
 		{
-			// To customize application configuration such as set high DPI settings or default font,
-			// see https://aka.ms/applicationconfiguration.
+			CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 			//ApplicationConfiguration.Initialize();
 			//Application.Run(new Form1());
 
 			// test code for quick encode. NOT FOR PRODUCTION
-			Slf? slf = SlfParser.ParseSlf("C:\\Users\\kriek\\source\\repos\\VincentKriek\\slgToFit\\Activities\\2024_04_06__13_08.slf");
+			Slf? slf = SlfParser.ParseSlf("C:\\Users\\kriek\\source\\repos\\VincentKriek\\slgToFit\\Activities\\2024_05_22__14_49.slf");
 			SlfToFitEncoder encoder = new SlfToFitEncoder();
 			encoder.Encode(slf, "C:\\Users\\kriek\\Downloads\\test.fit");
 		}

@@ -21,6 +21,7 @@ namespace SlfToFit
 
 			// all messages
 			FileIdMesg fileIdMesg = CreateFileIdMesg(slf, timeCreated);
+			HrZoneMesg[] hrZoneMesgs = CreateHrZoneMesgs(slf);
 			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
 			ActivityMesg activityMesg = CreateActivityMesg(slf);
 			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted);
@@ -39,6 +40,7 @@ namespace SlfToFit
 				WriteDeveloperDataFields(encoder);
 
 				// write other general information
+				encoder.Write(hrZoneMesgs);
 				encoder.Write(deviceInfoMesg);
 				foreach(var mesg in sessionAndEventMesgs)
 				{
@@ -70,6 +72,26 @@ namespace SlfToFit
 			return fileIdMesg;
 		}
 
+		private HrZoneMesg[] CreateHrZoneMesgs(Slf slf)
+		{
+			(int hrValue, string name)[] values =
+				[
+					(slf.GeneralInformation.IntensityZone1Start, "IntensityZone1Start"),
+					(slf.GeneralInformation.IntensityZone2Start, "IntensityZone2Start"),
+					(slf.GeneralInformation.IntensityZone3Start, "IntensityZone3Start"),
+					(slf.GeneralInformation.IntensityZone4Start, "IntensityZone4Start"),
+					(slf.GeneralInformation.IntensityZone4End, "IntensityZone4End")
+				];
+			return values.Select(x => CreateHrZoneMesg(x.hrValue, x.name)).ToArray();
+		}
+
+		private HrZoneMesg CreateHrZoneMesg(int hrValue, string name)
+		{
+			HrZoneMesg hrZoneMesg = new();
+			hrZoneMesg.SetHighBpm((byte)hrValue);
+			hrZoneMesg.SetName(name);
+			return hrZoneMesg;
+		}
 
 		private void CreateDeveloperDataFields()
 		{

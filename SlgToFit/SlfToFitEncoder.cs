@@ -22,9 +22,10 @@ namespace SlfToFit
 			// all messages
 			FileIdMesg fileIdMesg = CreateFileIdMesg(slf, timeCreated);
 			HrZoneMesg[] hrZoneMesgs = CreateHrZoneMesgs(slf);
+			PowerZoneMesg[] powerZoneMesgs = CreatePowerZoneMesgs(slf);
 			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
 			ActivityMesg activityMesg = CreateActivityMesg(slf);
-			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted);
+			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted, timeEnded);
 			Mesg[] sessionAndEventMesgs = CreateSessionAndEventsMesgs(slf, timeStarted, timeEnded);
 
 			try
@@ -41,6 +42,7 @@ namespace SlfToFit
 
 				// write other general information
 				encoder.Write(hrZoneMesgs);
+				encoder.Write(powerZoneMesgs);
 				encoder.Write(deviceInfoMesg);
 				foreach(var mesg in sessionAndEventMesgs)
 				{
@@ -91,6 +93,30 @@ namespace SlfToFit
 			hrZoneMesg.SetHighBpm((byte)hrValue);
 			hrZoneMesg.SetName(name);
 			return hrZoneMesg;
+		}
+
+		private PowerZoneMesg[] CreatePowerZoneMesgs(Slf slf)
+		{
+			(int powerValue, string name)[] values =
+				[
+					(slf.GeneralInformation.PowerZone1Start, "PowerZone1Start"),
+					(slf.GeneralInformation.PowerZone2Start, "PowerZone2Start"),
+					(slf.GeneralInformation.PowerZone3Start, "PowerZone3Start"),
+					(slf.GeneralInformation.PowerZone4Start, "PowerZone4Start"),
+					(slf.GeneralInformation.PowerZone5Start, "PowerZone5Start"),
+					(slf.GeneralInformation.PowerZone6Start, "PowerZone6Start"),
+					(slf.GeneralInformation.PowerZone7Start, "PowerZone7Start"),
+					(slf.GeneralInformation.PowerZone7End, "PowerZone7End")
+				];
+			return values.Select(x => CreatePowerZoneMesg(x.powerValue, x.name)).ToArray();
+		}
+
+		private PowerZoneMesg CreatePowerZoneMesg(int powerValue, string name)
+		{
+			PowerZoneMesg powerZoneMesg = new();
+			powerZoneMesg.SetHighValue((ushort)powerValue);
+			powerZoneMesg.SetName(name);
+			return powerZoneMesg;
 		}
 
 		private void CreateDeveloperDataFields()
@@ -162,16 +188,44 @@ namespace SlfToFit
 			return activityMesg;
 		}
 
-		private SessionMesg CreateSessionMesg(Slf slf, Dynastream.Fit.DateTime startTime)
+		private SessionMesg CreateSessionMesg(Slf slf, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime)
 		{
 			SessionMesg sessionMesg = new();
-			sessionMesg.SetTotalElapsedTime(slf.GeneralInformation.ExcerciseTime);
+			sessionMesg.SetMinHeartRate((byte)slf.GeneralInformation.MinimumHeartrate);
+			sessionMesg.SetEventType(EventType.Stop);
 			sessionMesg.SetStartTime(startTime);
+			sessionMesg.SetSport(slf.GeneralInformation.Sport);
+			sessionMesg.SetSubSport(slf.GeneralInformation.SubSport);
+			sessionMesg.SetTotalElapsedTime(slf.GeneralInformation.ExcerciseTime);
 			sessionMesg.SetTotalTimerTime(slf.GeneralInformation.TrainingTime);
 			sessionMesg.SetTotalDistance(slf.GeneralInformation.Distance);
-			sessionMesg.SetSport(slf.GeneralInformation.Sport);
+			sessionMesg.SetTotalCalories((ushort)slf.GeneralInformation.Calories);
+			sessionMesg.SetAvgSpeed(slf.GeneralInformation.AverageSpeed);
+			sessionMesg.SetMaxSpeed(slf.GeneralInformation.MaximumSpeed);
+			sessionMesg.SetAvgHeartRate((byte)slf.GeneralInformation.AverageHeartrate);
+			sessionMesg.SetMaxHeartRate((byte)slf.GeneralInformation.MaximumHeartrate);
+			sessionMesg.SetAvgCadence((byte)slf.GeneralInformation.AverageCadence);
+			sessionMesg.SetMaxCadence((byte)slf.GeneralInformation.MaximumCadence);
+			sessionMesg.SetMaxPower((ushort)slf.GeneralInformation.MaximumPower);
+			sessionMesg.SetTotalAscent((ushort)slf.GeneralInformation.AltitudeDifferencesUphill);
+			sessionMesg.SetTotalDescent((ushort)slf.GeneralInformation.AltitudeDifferencesDownhill);
+			sessionMesg.SetMinAltitude(slf.GeneralInformation.MinimumAltitude);
 			sessionMesg.SetEvent(Event.Session);
-			sessionMesg.SetEventType(EventType.Stop);
+			sessionMesg.SetTrigger(SessionTrigger.ActivityEnd);
+			sessionMesg.SetNormalizedPower((ushort)slf.GeneralInformation.PowerNP);
+			sessionMesg.SetTrainingStressScore(slf.GeneralInformation.PowerTSS);
+			sessionMesg.SetIntensityFactor(slf.GeneralInformation.PowerIF);
+			sessionMesg.SetLeftRightBalance((ushort)slf.GeneralInformation.AverageBalanceRight);
+			sessionMesg.SetAvgRightTorqueEffectiveness(slf.GeneralInformation.TorqueEffectLeft);
+			sessionMesg.SetAvgLeftPedalSmoothness(slf.GeneralInformation.PedalSmoothLeft);
+			sessionMesg.SetAvgRightPedalSmoothness(slf.GeneralInformation.PedalSmoothRight);
+			sessionMesg.SetThresholdPower((ushort)slf.GeneralInformation.PowerFTP);
+			sessionMesg.SetTotalWork(slf.GeneralInformation.WorkinJ);
+			sessionMesg.SetMaxAltitude(slf.GeneralInformation.MaximumAltitude);
+			sessionMesg.SetAvgLeftTorqueEffectiveness(slf.GeneralInformation.TorqueEffectLeft);
+			sessionMesg.SetAvgTemperature((sbyte)slf.GeneralInformation.AverageTemperature);
+			sessionMesg.SetMaxTemperature((sbyte)slf.GeneralInformation.MaximumTemperature);
+			sessionMesg.SetTimestamp(endTime);
 			sessionMesg.SetNumLaps((ushort)slf.Laps.Length);
 			return sessionMesg;
 		}

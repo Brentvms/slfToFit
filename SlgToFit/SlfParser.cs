@@ -153,7 +153,7 @@ namespace SlfToFit
 			int weather = int.Parse(GetElement(generalInformation, "weather").Value);
 			int wheelSize = int.Parse(GetElement(generalInformation, "wheelSize").Value);
 			int wind = int.Parse(GetElement(generalInformation, "wind").Value);
-			int workInKJ = int.Parse(GetElement(generalInformation, "workInKJ").Value);
+			uint workInKJ = uint.Parse(GetElement(generalInformation, "workInKJ").Value);
 			float best5KTime = float.Parse(GetElement(generalInformation, "best5KTime").Value);
 			float best5KEntry = float.Parse(GetElement(generalInformation, "best5KEntry").Value);
 			float best20MinPower = float.Parse(GetElement(generalInformation, "best20minPower").Value);

@@ -106,7 +106,7 @@ namespace SlfToFit.SlfEntities
 		int weather,
 		int wheelSize,
 		int wind,
-		int workinKJ,
+		uint workinKJ,
 		float best5KTime,
 		float best5KEntry,
 		float best20minPower,
@@ -131,6 +131,7 @@ namespace SlfToFit.SlfEntities
 	{
 		public readonly User User = user;                                                   // User that recorded the activity
 		public readonly Sport Sport = SportMap(sport);                                      // Type of sport that is recorded
+		public readonly SubSport SubSport = SubSportMap(sport);							// Type of subsport that is recorded
 		public readonly string GUID = gUID;                                                 // GUID of the activity
 		public readonly int Age = age;                                                      // Age of the user
 		public readonly int AltitudeDifferencesDownhill = altitudeDifferencesDownhill;      // Differences in altitude downhill
@@ -230,7 +231,7 @@ namespace SlfToFit.SlfEntities
 		public readonly int Weather = weather;                                              // Weather conditions
 		public readonly int WheelSize = wheelSize;                                          // Size of the wheel
 		public readonly int Wind = wind;                                                    // Wind conditions
-		public readonly int WorkinKJ = workinKJ;                                            // Work in kilojoules
+		public readonly uint WorkinJ = workinKJ*1000;                                        // Work in kilojoules
 		public readonly float Best5KTime = best5KTime/100f;                                  // Best 5K time
 		public readonly float Best5KEntry = best5KEntry;                                    // Entry for best 5K time
 		public readonly float Best20minPower = best20minPower;                              // Best 20-minute power
@@ -257,10 +258,20 @@ namespace SlfToFit.SlfEntities
 		{
 			return sport switch
 			{
-				"racing_bycicle" => Dynastream.Fit.Sport.Cycling,
+				"racing_bycicle" => Sport.Cycling,
 				_ => throw new NotImplementedException("Sport is not implemented in mapping")
 			};
 		}
+
+		private static SubSport SubSportMap(string sport)
+		{
+			return sport switch
+			{
+				"racing_bycicle" => SubSport.Road,
+				_ => throw new NotImplementedException("Subsport is not implemented in mapping")
+			};
+		}
+
 
 		#region @ToString
 

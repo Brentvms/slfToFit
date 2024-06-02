@@ -16,17 +16,17 @@ namespace SlfToFit
 		public float GetLapTimePaused(Marker lap)
 		{
 			float lower = lap.RelativeStartingTime;
-			float upper = lap.TimeAbsolute;
-			Marker[] pausesInLap = Pauses.Where(pause => pause.TimeAbsolute - pause.Duration >= lower || pause.TimeAbsolute <= upper).ToArray();
+			float upper = lap.RelvativeEndingTime;
+			Marker[] pausesInLap = Pauses.Where(pause => pause.RelativeStartingTime >= lower || pause.RelvativeEndingTime <= upper).ToArray();
 			return pausesInLap.Aggregate(0f, (acc, marker) =>
 			{
 				if (marker.RelativeStartingTime < lower)
 				{
-					return acc + marker.TimeAbsolute - lower;
+					return acc + marker.RelvativeEndingTime - lower;
 				}
-				if (marker.TimeAbsolute > upper)
+				if (marker.RelvativeEndingTime > upper)
 				{
-					return acc + upper - (marker.TimeAbsolute - marker.Duration);
+					return acc + upper - marker.RelativeStartingTime;
 				}
 				return acc + marker.Duration;
 			});

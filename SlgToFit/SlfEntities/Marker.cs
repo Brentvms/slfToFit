@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SlfToFit.SlfEntities
 {
-	public class Marker(
+	public abstract class Marker(
 		int altitudeDownhill,
 		int altitudeUphill,
 		int averageAltitude,
@@ -43,9 +43,9 @@ namespace SlfToFit.SlfEntities
 		float leftPedalingSmoothness,
 		float rightPedalingSmoothness)
 	{
-		public readonly int AltitudeDownhill = altitudeDownhill;                            // Downhill altitude for this lap
-		public readonly int AltitudeUphill = altitudeUphill;                                // Uphill altitude for this lap
-		public readonly int AverageAltitude = averageAltitude;                              // Average altitude for this lap
+		public readonly float AltitudeDownhill = altitudeDownhill/1000f;                    // Downhill altitude for this lap
+		public readonly float AltitudeUphill = altitudeUphill/1000f;                        // Uphill altitude for this lap
+		public readonly float AverageAltitude = averageAltitude/1000f;                      // Average altitude for this lap
 		public readonly int AverageCadence = averageCadence;                                // Average cadence for this lap
 		public readonly int AverageHeartrate = averageHeartrate;                            // Average heartrate for this lap
 		public readonly float AverageInclineDownhill = averageInclineDownhill;              // Average incline downhill for this lap
@@ -56,7 +56,7 @@ namespace SlfToFit.SlfEntities
 		public readonly string Description = description;                                   // Description of this lap
 		public readonly float Distance = distance;                                          // Total distance covered in this lap
 		public readonly float DistanceAbsolute = distanceAbsolute;                          // Absolute distance covered in this lap
-		public readonly float Duration = duration/100f;                                      // Duration of marker. Only for pauses
+		protected readonly float _duration = duration/100f;									// Duration of marker. Only for pauses
 		public readonly bool FastLap = fastLap;                                             // Indicates if it's the fastest lap
 		public readonly float Latitude = latitude;                                          // Latitude for this lap
 		public readonly float Longitude = longitude;                                        // Longitude for this lap
@@ -82,7 +82,11 @@ namespace SlfToFit.SlfEntities
 		public readonly float LeftPedalingSmoothness = leftPedalingSmoothness;              // Left pedaling smoothness in this lap
 		public readonly float RightPedalingSmoothness = rightPedalingSmoothness;            // Right pedaling smoothness in this lap
 
-		public float RelativeStartingTime { get { return TimeAbsolute - Time; } }
+		public abstract float RelativeStartingTime { get; }
+		public abstract float RelvativeEndingTime { get; }
+		public abstract float Duration { get; }
+		public int IntLatitude { get { return (int)(Latitude * (Math.Pow(2, 32) / 360)); } }
+		public int IntLongitude { get { return (int)(Longitude * (Math.Pow(2, 32) / 360)); } }
 
 		#region @ToString
 

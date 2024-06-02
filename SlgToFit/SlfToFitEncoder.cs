@@ -16,6 +16,7 @@ namespace SlfToFit
 			Encode? encoder = null;
 			Dynastream.Fit.DateTime timeCreated = new(System.DateTime.Now);
 			Dynastream.Fit.DateTime timeStarted = new(slf.GeneralInformation.StartDate);
+			Dynastream.Fit.DateTime timeEnded = GlobalUtilities.AddSecondsToDynstreamDateTime(timeStarted, slf.GeneralInformation.ExcerciseTime);
 			CreateDeveloperDataFields();
 
 			// all messages
@@ -23,7 +24,7 @@ namespace SlfToFit
 			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
 			ActivityMesg activityMesg = CreateActivityMesg(slf);
 			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted);
-			LapMesg[] lapMesgs = CreateLapMesgs(slf, timeStarted);
+			Mesg[] sessionAndEventMesgs = CreateSessionAndEventsMesgs(slf, timeStarted, timeEnded);
 
 			try
 			{
@@ -39,12 +40,12 @@ namespace SlfToFit
 
 				// write other general information
 				encoder.Write(deviceInfoMesg);
+				foreach(var mesg in sessionAndEventMesgs)
+				{
+					encoder.Write(mesg);
+				}
 				encoder.Write(activityMesg);
 				encoder.Write(sessionMesg);
-				foreach (var lap in lapMesgs)
-				{
-					encoder.Write(lap);
-				}
 			}
 			catch(Exception ex)
 			{
@@ -153,23 +154,124 @@ namespace SlfToFit
 			return sessionMesg;
 		}
 
-		private LapMesg[] CreateLapMesgs(Slf slf, Dynastream.Fit.DateTime startingTime)
-		{
-			return slf.Laps.Select(marker => CreateLapMesg(marker, startingTime, slf)).ToArray();
-		}
-
-		private LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf)
+		//TODO: use pausetime with starttime and timestamp
+		private LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf, float timePaused, int index)
 		{
 			LapMesg lapMesg = new();
-			lapMesg.SetTotalElapsedTime(lap.Time + slf.GetLapTimePaused(lap));
-			lapMesg.SetStartTime(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelativeStartingTime));
-			lapMesg.SetTotalTimerTime(lap.Time);
-			lapMesg.SetTotalDistance(lap.Distance);
 			lapMesg.SetEvent(Event.Lap);
 			lapMesg.SetEventType(EventType.Stop);
+			lapMesg.SetStartTime(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelativeStartingTime));
+			lapMesg.SetEndPositionLat(lap.IntLatitude);
+			lapMesg.SetEndPositionLong(lap.IntLongitude);
+			lapMesg.SetTotalElapsedTime(lap.Duration + slf.GetLapTimePaused(lap));
+			lapMesg.SetTotalTimerTime(lap.Duration);
+			lapMesg.SetTotalDistance(lap.Distance);
+			lapMesg.SetTotalCalories((ushort)lap.Calories);
+			lapMesg.SetAvgSpeed(lap.AverageSpeed);
+			lapMesg.SetAvgHeartRate((byte)lap.AverageHeartrate);
+			lapMesg.SetAvgCadence((byte)lap.AverageCadence);
+			lapMesg.SetAvgPower((byte)lap.AveragePower);
+			lapMesg.SetTotalAscent((ushort)lap.AltitudeUphill);
+			lapMesg.SetTotalDescent((ushort)lap.AltitudeDownhill);
+			lapMesg.SetLapTrigger(lap.RelvativeEndingTime == slf.GeneralInformation.TrainingTime ? LapTrigger.SessionEnd : LapTrigger.Distance);
+			lapMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelvativeEndingTime));
 			lapMesg.SetSport(slf.GeneralInformation.Sport);
-			lapMesg.SetLapTrigger(lap.TimeAbsolute == slf.GeneralInformation.TrainingTime ? LapTrigger.SessionEnd : LapTrigger.Distance);
+			lapMesg.SetMessageIndex((ushort)index);
 			return lapMesg;
+		}
+
+		private Mesg[] CreateSessionAndEventsMesgs(Slf slf, Dynastream.Fit.DateTime startingTime, Dynastream.Fit.DateTime endingTime)
+		{
+			List<Mesg> messages = [];
+			int pauseIndex = 0;
+			int lapIndex = 0;
+			float timePaused = 0f;
+			float totalCalories = 0f;
+			float totalDistance = 0f;
+
+			// Start activity
+			EventMesg startEvent = new();
+			startEvent.SetEvent(Event.Timer);
+			startEvent.SetTimestamp(startingTime);
+			startEvent.SetTimerTrigger((byte)TimerTrigger.Manual);
+			startEvent.SetEventType(EventType.Start);
+			messages.Add(startEvent);
+
+			// Create pause and session messages
+			for (int i = 0; i < slf.Entries.Length; i++)
+			{
+				while (lapIndex < slf.Laps.Length && slf.Laps[lapIndex].RelvativeEndingTime < slf.Entries[i].TrainingTimeAbsolute)
+				{
+					LapMesg lapMesg = CreateLapMesg(slf.Laps[lapIndex], startingTime, slf, timePaused, lapIndex);
+					messages.Add(lapMesg);
+					lapIndex++;
+				}
+				while (pauseIndex < slf.Pauses.Length && slf.Pauses[pauseIndex].RelativeStartingTime < slf.Entries[i].TrainingTimeAbsolute)
+				{
+					(EventMesg startPause, EventMesg stopPause) = CreatePauseMesg(slf.Pauses[pauseIndex], startingTime, timePaused);
+					messages.Add(startPause);
+					messages.Add(stopPause);
+					timePaused += slf.Pauses[pauseIndex].Duration;
+					pauseIndex++;
+				}
+
+				totalCalories += slf.Entries[i].Calories;
+				totalDistance += slf.Entries[i].Distance;
+				messages.Add(CreateRecordMesg(slf.Entries[i], startingTime, timePaused, totalCalories, totalDistance));
+			}
+			// Add last lap mesg
+			if (slf.Laps[^1].RelvativeEndingTime == slf.Entries[^1].TrainingTimeAbsolute)
+			{
+				LapMesg lapMesg = CreateLapMesg(slf.Laps[^1], startingTime, slf, timePaused, lapIndex);
+				messages.Add(lapMesg);
+			}
+
+			// Stop activity
+			EventMesg stopEvent = new();
+			stopEvent.SetEvent(Event.Timer);
+			stopEvent.SetTimestamp(endingTime);
+			stopEvent.SetTimerTrigger((byte)TimerTrigger.Manual);
+			stopEvent.SetEventType(EventType.StopAll);
+			messages.Add(stopEvent);
+
+			return [.. messages];
+		}
+
+		private (EventMesg, EventMesg) CreatePauseMesg(Marker pauseMarker, Dynastream.Fit.DateTime startingTime, float timePaused)
+		{
+			EventMesg startPauseMesg = new();
+			startPauseMesg.SetEvent(Event.Timer);
+			startPauseMesg.SetEventType(EventType.Stop);
+			startPauseMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, timePaused + pauseMarker.RelativeStartingTime));
+			startPauseMesg.SetTimerTrigger((byte)TimerTrigger.Manual);
+
+			EventMesg endPauseMesg = new();
+			endPauseMesg.SetEvent(Event.Timer);
+			endPauseMesg.SetEventType(EventType.Start);
+			endPauseMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, timePaused + pauseMarker.RelvativeEndingTime));
+			endPauseMesg.SetTimerTrigger((byte)TimerTrigger.Manual);
+
+			return (startPauseMesg, endPauseMesg);
+		}
+
+		private RecordMesg CreateRecordMesg(Entry entry, Dynastream.Fit.DateTime startingTime, float timePaused, float totalCalories, float totalDistance)
+		{
+			RecordMesg recordMesg = new();
+			recordMesg.SetPositionLat(entry.IntLatitude);
+			recordMesg.SetPositionLong(entry.IntLongitude);
+			recordMesg.SetAltitude(entry.Altitude);
+			recordMesg.SetHeartRate((byte)entry.Heartrate);
+			recordMesg.SetCadence((byte)entry.Cadence);
+			recordMesg.SetDistance(totalDistance);
+			recordMesg.SetSpeed(entry.Speed);
+			recordMesg.SetPower((ushort)entry.Power);
+			recordMesg.SetGrade(entry.Incline);
+			recordMesg.SetTemperature((sbyte)entry.Temperature);
+			recordMesg.SetCalories((ushort)totalCalories);
+			recordMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, entry.TrainingTimeAbsolute + timePaused));
+			recordMesg.SetLeftRightBalance((byte)entry.RightBalance);
+			recordMesg.SetAltitude(entry.Altitude);
+			return recordMesg;
 		}
 	}
 }

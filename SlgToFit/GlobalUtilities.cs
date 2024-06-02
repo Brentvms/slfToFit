@@ -4,9 +4,9 @@ namespace SlfToFit
 {
 	public static class GlobalUtilities
 	{
-		public static System.DateTime SlgDateToDateTime(string slgDate)
+		public static DateTime SlgDateToDateTime(string slgDate)
 		{
-			return System.DateTime.ParseExact(slgDate, "ddd MMM d HH:mm:ss 'GMT'zzz yyyy", CultureInfo.InvariantCulture);
+			return DateTime.ParseExact(slgDate, "ddd MMM d HH:mm:ss 'GMT'zzz yyyy", CultureInfo.InvariantCulture).ToUniversalTime();
 		}
 
 		public static Dynastream.Fit.DateTime AddSecondsToDynstreamDateTime(Dynastream.Fit.DateTime dt, float seconds)

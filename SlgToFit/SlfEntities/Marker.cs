@@ -7,13 +7,13 @@ namespace SlfToFit.SlfEntities
 		int altitudeDownhill,
 		int altitudeUphill,
 		int averageAltitude,
-		int averageCadence,
-		int averageHeartrate,
+		byte averageCadence,
+		byte averageHeartrate,
 		float averageInclineDownhill,
 		float averageInclineUphill,
-		int averagePower,
+		ushort averagePower,
 		float averageSpeed,
-		int calories,
+		ushort calories,
 		string description,
 		float distance,
 		float distanceAbsolute,
@@ -22,20 +22,20 @@ namespace SlfToFit.SlfEntities
 		float latitude,
 		float longitude,
 		int maximumAltitude,
-		int maximumCadence,
-		int maximumHeartrate,
+		byte maximumCadence,
+		byte maximumHeartrate,
 		float maximumInclineDownhill,
 		float maximumInclineUphill,
-		int maximumPower,
+		ushort maximumPower,
 		float maximumSpeed,
-		int minimumHeartrate,
+		byte minimumHeartrate,
 		float minimumSpeed,
 		int number,
 		int time,
 		int timeAbsolute,
 		string title,
 		string type,
-		int normalizedPower,
+		ushort normalizedPower,
 		float averageBalance,
 		int pedalingTime,
 		float leftTorqueEffectivity,
@@ -43,16 +43,16 @@ namespace SlfToFit.SlfEntities
 		float leftPedalingSmoothness,
 		float rightPedalingSmoothness)
 	{
-		public readonly float AltitudeDownhill = altitudeDownhill/1000f;                    // Downhill altitude for this lap
-		public readonly float AltitudeUphill = altitudeUphill/1000f;                        // Uphill altitude for this lap
+		public readonly ushort AltitudeDownhill = (ushort)(altitudeDownhill/1000f);         // Downhill altitude for this lap
+		public readonly ushort AltitudeUphill = (ushort)(altitudeUphill/1000f);             // Uphill altitude for this lap
 		public readonly float AverageAltitude = averageAltitude/1000f;                      // Average altitude for this lap
-		public readonly int AverageCadence = averageCadence;                                // Average cadence for this lap
-		public readonly int AverageHeartrate = averageHeartrate;                            // Average heartrate for this lap
+		public readonly byte AverageCadence = averageCadence;                               // Average cadence for this lap
+		public readonly byte AverageHeartrate = averageHeartrate;                           // Average heartrate for this lap
 		public readonly float AverageInclineDownhill = averageInclineDownhill;              // Average incline downhill for this lap
 		public readonly float AverageInclineUphill = averageInclineUphill;                  // Average incline uphill for this lap
-		public readonly int AveragePower = averagePower;                                    // Average power for this lap
+		public readonly ushort AveragePower = averagePower;                                 // Average power for this lap
 		public readonly float AverageSpeed = averageSpeed;                                  // Average speed for this lap
-		public readonly int Calories = calories;                                            // Calories burned for this lap
+		public readonly ushort Calories = calories;                                         // Calories burned for this lap
 		public readonly string Description = description;                                   // Description of this lap
 		public readonly float Distance = distance;                                          // Total distance covered in this lap
 		public readonly float DistanceAbsolute = distanceAbsolute;                          // Absolute distance covered in this lap
@@ -61,22 +61,22 @@ namespace SlfToFit.SlfEntities
 		public readonly float Latitude = latitude;                                          // Latitude for this lap
 		public readonly float Longitude = longitude;                                        // Longitude for this lap
 		public readonly int MaximumAltitude = maximumAltitude;                              // Maximum altitude reached in this lap
-		public readonly int MaximumCadence = maximumCadence;                                // Maximum cadence in this lap
-		public readonly int MaximumHeartrate = maximumHeartrate;                            // Maximum heartrate in this lap
+		public readonly byte MaximumCadence = maximumCadence;                               // Maximum cadence in this lap
+		public readonly byte MaximumHeartrate = maximumHeartrate;                           // Maximum heartrate in this lap
 		public readonly float MaximumInclineDownhill = maximumInclineDownhill;              // Maximum incline downhill in this lap
 		public readonly float MaximumInclineUphill = maximumInclineUphill;                  // Maximum incline uphill in this lap
-		public readonly int MaximumPower = maximumPower;                                    // Maximum power output in this lap
+		public readonly ushort MaximumPower = maximumPower;                                 // Maximum power output in this lap
 		public readonly float MaximumSpeed = maximumSpeed;                                  // Maximum speed reached in this lap
-		public readonly int MinimumHeartrate = minimumHeartrate;                            // Minimum heartrate in this lap
+		public readonly byte MinimumHeartrate = minimumHeartrate;                           // Minimum heartrate in this lap
 		public readonly float MinimumSpeed = minimumSpeed;                                  // Minimum speed in this lap
 		public readonly int Number = number;                                                // Number of this lap
-		public readonly float Time = time/100f;                                              // Time of this lap
-		public readonly float TimeAbsolute = timeAbsolute/100f;                              // Time up and until this lap
+		public readonly float Time = time/100f;                                             // Time of this lap
+		public readonly float TimeAbsolute = timeAbsolute/100f;                             // Time up and until this lap
 		public readonly string Title = title;                                               // Title of this lap
 		public readonly string Type = type;                                                 // Type of this lap: l = lap, p = pause
-		public readonly int NormalizedPower = normalizedPower;                              // Normalized power output in this lap
+		public readonly ushort NormalizedPower = normalizedPower;                           // Normalized power output in this lap
 		public readonly float AverageBalance = averageBalance;                              // Average balance in this lap
-		public readonly float PedalingTime = pedalingTime/100f;                              // Total pedaling time in this lap
+		public readonly float PedalingTime = pedalingTime/100f;                             // Total pedaling time in this lap
 		public readonly float LeftTorqueEffectivity = leftTorqueEffectivity;                // Left torque effectivity in this lap
 		public readonly float RightTorqueEffectivity = rightTorqueEffectivity;              // Right torque effectivity in this lap
 		public readonly float LeftPedalingSmoothness = leftPedalingSmoothness;              // Left pedaling smoothness in this lap

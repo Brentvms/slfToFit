@@ -13,6 +13,8 @@ namespace SlfToFit
 		public readonly Marker[] Laps = markers.Where(marker => marker.Type == "l").ToArray();	// Lap markers 
 		public readonly Marker[] Pauses = markers.Where(marker => marker.Type == "p").ToArray();// Pause markers
 
+		public ushort NumLaps {  get { return (ushort)Laps.Length; } }
+
 		public float GetLapTimePaused(Marker lap)
 		{
 			float lower = lap.RelativeStartingTime;

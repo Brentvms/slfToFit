@@ -1,6 +1,5 @@
 ﻿using Dynastream.Fit;
 using SlfToFit.SlfEntities;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 
 namespace SlfToFit
@@ -48,8 +47,8 @@ namespace SlfToFit
 				{
 					encoder.Write(mesg);
 				}
-				encoder.Write(activityMesg);
 				encoder.Write(sessionMesg);
+				encoder.Write(activityMesg);
 			}
 			catch(Exception ex)
 			{
@@ -199,39 +198,40 @@ namespace SlfToFit
 			sessionMesg.SetTotalElapsedTime(slf.GeneralInformation.ExcerciseTime);
 			sessionMesg.SetTotalTimerTime(slf.GeneralInformation.TrainingTime);
 			sessionMesg.SetTotalDistance(slf.GeneralInformation.Distance);
-			sessionMesg.SetTotalCalories((ushort)slf.GeneralInformation.Calories);
+			sessionMesg.SetTotalCalories(slf.GeneralInformation.Calories);
 			sessionMesg.SetAvgSpeed(slf.GeneralInformation.AverageSpeed);
 			sessionMesg.SetMaxSpeed(slf.GeneralInformation.MaximumSpeed);
-			sessionMesg.SetAvgHeartRate((byte)slf.GeneralInformation.AverageHeartrate);
-			sessionMesg.SetMaxHeartRate((byte)slf.GeneralInformation.MaximumHeartrate);
-			sessionMesg.SetAvgCadence((byte)slf.GeneralInformation.AverageCadence);
-			sessionMesg.SetMaxCadence((byte)slf.GeneralInformation.MaximumCadence);
-			sessionMesg.SetMaxPower((ushort)slf.GeneralInformation.MaximumPower);
-			sessionMesg.SetTotalAscent((ushort)slf.GeneralInformation.AltitudeDifferencesUphill);
-			sessionMesg.SetTotalDescent((ushort)slf.GeneralInformation.AltitudeDifferencesDownhill);
+			sessionMesg.SetAvgHeartRate(slf.GeneralInformation.AverageHeartrate);
+			sessionMesg.SetMaxHeartRate(slf.GeneralInformation.MaximumHeartrate);
+			sessionMesg.SetAvgCadence(slf.GeneralInformation.AverageCadence);
+			sessionMesg.SetMaxCadence(slf.GeneralInformation.MaximumCadence);
+			sessionMesg.SetAvgPower(slf.GeneralInformation.AveragePower);
+			sessionMesg.SetMaxPower(slf.GeneralInformation.MaximumPower);
+			sessionMesg.SetTotalAscent(slf.GeneralInformation.AltitudeDifferencesUphill);
+			sessionMesg.SetTotalDescent(slf.GeneralInformation.AltitudeDifferencesDownhill);
 			sessionMesg.SetMinAltitude(slf.GeneralInformation.MinimumAltitude);
 			sessionMesg.SetEvent(Event.Session);
 			sessionMesg.SetTrigger(SessionTrigger.ActivityEnd);
-			sessionMesg.SetNormalizedPower((ushort)slf.GeneralInformation.PowerNP);
+			sessionMesg.SetNormalizedPower(slf.GeneralInformation.PowerNP);
 			sessionMesg.SetTrainingStressScore(slf.GeneralInformation.PowerTSS);
 			sessionMesg.SetIntensityFactor(slf.GeneralInformation.PowerIF);
-			sessionMesg.SetLeftRightBalance((ushort)slf.GeneralInformation.AverageBalanceRight);
+			sessionMesg.SetLeftRightBalance(slf.GeneralInformation.AverageBalanceRight);
 			sessionMesg.SetAvgRightTorqueEffectiveness(slf.GeneralInformation.TorqueEffectLeft);
 			sessionMesg.SetAvgLeftPedalSmoothness(slf.GeneralInformation.PedalSmoothLeft);
 			sessionMesg.SetAvgRightPedalSmoothness(slf.GeneralInformation.PedalSmoothRight);
-			sessionMesg.SetThresholdPower((ushort)slf.GeneralInformation.PowerFTP);
+			sessionMesg.SetThresholdPower(slf.GeneralInformation.PowerFTP);
 			sessionMesg.SetTotalWork(slf.GeneralInformation.WorkinJ);
 			sessionMesg.SetMaxAltitude(slf.GeneralInformation.MaximumAltitude);
 			sessionMesg.SetAvgLeftTorqueEffectiveness(slf.GeneralInformation.TorqueEffectLeft);
-			sessionMesg.SetAvgTemperature((sbyte)slf.GeneralInformation.AverageTemperature);
-			sessionMesg.SetMaxTemperature((sbyte)slf.GeneralInformation.MaximumTemperature);
+			sessionMesg.SetAvgTemperature(slf.GeneralInformation.AverageTemperature);
+			sessionMesg.SetMaxTemperature(slf.GeneralInformation.MaximumTemperature);
 			sessionMesg.SetTimestamp(endTime);
-			sessionMesg.SetNumLaps((ushort)slf.Laps.Length);
+			sessionMesg.SetNumLaps(slf.NumLaps);
 			return sessionMesg;
 		}
 
 		//TODO: use pausetime with starttime and timestamp
-		private LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf, float timePaused, int index)
+		private LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf, float timePaused, ushort index)
 		{
 			LapMesg lapMesg = new();
 			lapMesg.SetEvent(Event.Lap);
@@ -242,17 +242,17 @@ namespace SlfToFit
 			lapMesg.SetTotalElapsedTime(lap.Duration + slf.GetLapTimePaused(lap));
 			lapMesg.SetTotalTimerTime(lap.Duration);
 			lapMesg.SetTotalDistance(lap.Distance);
-			lapMesg.SetTotalCalories((ushort)lap.Calories);
+			lapMesg.SetTotalCalories(lap.Calories);
 			lapMesg.SetAvgSpeed(lap.AverageSpeed);
-			lapMesg.SetAvgHeartRate((byte)lap.AverageHeartrate);
-			lapMesg.SetAvgCadence((byte)lap.AverageCadence);
-			lapMesg.SetAvgPower((byte)lap.AveragePower);
-			lapMesg.SetTotalAscent((ushort)lap.AltitudeUphill);
-			lapMesg.SetTotalDescent((ushort)lap.AltitudeDownhill);
+			lapMesg.SetAvgHeartRate(lap.AverageHeartrate);
+			lapMesg.SetAvgCadence(lap.AverageCadence);
+			lapMesg.SetAvgPower(lap.AveragePower);
+			lapMesg.SetTotalAscent(lap.AltitudeUphill);
+			lapMesg.SetTotalDescent(lap.AltitudeDownhill);
 			lapMesg.SetLapTrigger(lap.RelvativeEndingTime == slf.GeneralInformation.TrainingTime ? LapTrigger.SessionEnd : LapTrigger.Distance);
 			lapMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelvativeEndingTime));
 			lapMesg.SetSport(slf.GeneralInformation.Sport);
-			lapMesg.SetMessageIndex((ushort)index);
+			lapMesg.SetMessageIndex(index);
 			return lapMesg;
 		}
 
@@ -260,7 +260,7 @@ namespace SlfToFit
 		{
 			List<Mesg> messages = [];
 			int pauseIndex = 0;
-			int lapIndex = 0;
+			ushort lapIndex = 0;
 			float timePaused = 0f;
 			float totalCalories = 0f;
 			float totalDistance = 0f;
@@ -293,7 +293,7 @@ namespace SlfToFit
 
 				totalCalories += slf.Entries[i].Calories;
 				totalDistance += slf.Entries[i].Distance;
-				messages.Add(CreateRecordMesg(slf.Entries[i], startingTime, timePaused, totalCalories, totalDistance));
+				messages.Add(CreateRecordMesg(slf.Entries[i], startingTime, timePaused, (ushort)Math.Round(totalCalories), totalDistance));
 			}
 			// Add last lap mesg
 			if (slf.Laps[^1].RelvativeEndingTime == slf.Entries[^1].TrainingTimeAbsolute)
@@ -330,22 +330,22 @@ namespace SlfToFit
 			return (startPauseMesg, endPauseMesg);
 		}
 
-		private RecordMesg CreateRecordMesg(Entry entry, Dynastream.Fit.DateTime startingTime, float timePaused, float totalCalories, float totalDistance)
+		private RecordMesg CreateRecordMesg(Entry entry, Dynastream.Fit.DateTime startingTime, float timePaused, ushort totalCalories, float totalDistance)
 		{
 			RecordMesg recordMesg = new();
 			recordMesg.SetPositionLat(entry.IntLatitude);
 			recordMesg.SetPositionLong(entry.IntLongitude);
 			recordMesg.SetAltitude(entry.Altitude);
-			recordMesg.SetHeartRate((byte)entry.Heartrate);
-			recordMesg.SetCadence((byte)entry.Cadence);
+			recordMesg.SetHeartRate(entry.Heartrate);
+			recordMesg.SetCadence(entry.Cadence);
 			recordMesg.SetDistance(totalDistance);
 			recordMesg.SetSpeed(entry.Speed);
-			recordMesg.SetPower((ushort)entry.Power);
+			recordMesg.SetPower(entry.Power);
 			recordMesg.SetGrade(entry.Incline);
-			recordMesg.SetTemperature((sbyte)entry.Temperature);
-			recordMesg.SetCalories((ushort)totalCalories);
+			recordMesg.SetTemperature(entry.Temperature);
+			recordMesg.SetCalories(totalCalories);
 			recordMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, entry.TrainingTimeAbsolute + timePaused));
-			recordMesg.SetLeftRightBalance((byte)entry.RightBalance);
+			recordMesg.SetLeftRightBalance(entry.RightBalance);
 			recordMesg.SetAltitude(entry.Altitude);
 			return recordMesg;
 		}

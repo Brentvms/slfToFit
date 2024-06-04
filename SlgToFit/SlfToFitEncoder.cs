@@ -9,9 +9,8 @@ namespace SlfToFit
 		private readonly Dictionary<string, FieldDescriptionMesg> DeveloperFields = [];
 		private DeveloperDataIdMesg? DeveloperDataIdMesg;
 
-		public void Encode(Slf slf, string outputPath)
+		public void Encode(Slf slf, FileStream outputStream)
 		{
-			FileStream? fitDest = null;
 			Encode? encoder = null;
 			Dynastream.Fit.DateTime timeCreated = new(System.DateTime.Now);
 			Dynastream.Fit.DateTime timeStarted = new(slf.GeneralInformation.StartDate);
@@ -29,9 +28,8 @@ namespace SlfToFit
 
 			try
 			{
-				fitDest = new(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 				encoder = new(ProtocolVersion.V20);
-				encoder.Open(fitDest);
+				encoder.Open(outputStream);
 				
 				// the first message must be FileId
 				encoder.Write(fileIdMesg);
@@ -58,7 +56,7 @@ namespace SlfToFit
 			finally
 			{
 				encoder?.Close();
-				fitDest?.Close();
+				outputStream?.Close();
 			}
 		}
 

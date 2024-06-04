@@ -6,11 +6,11 @@ namespace SlfToFit
 {
 	public static class SlfParser
 	{
-		public static Slf? ParseSlf(string filePath)
+		public static Slf? ParseSlf(FileStream fileStream)
 		{
 			try
 			{
-				XDocument slf = XDocument.Load(filePath);
+				XDocument slf = XDocument.Load(fileStream);
 				XElement activityElement = GetRootElement(slf);
 				XElement computerElement = GetElement(activityElement, "Computer");
 				XElement generalInformationElement = GetElement(activityElement, "GeneralInformation");

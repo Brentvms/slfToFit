@@ -6,5 +6,13 @@ namespace SlfToFit
 		{
 			InitializeComponent();
 		}
+
+		private void BrowseButton_Click(object sender, EventArgs e)
+		{
+			if (inputFileDialog.ShowDialog() == DialogResult.OK)
+			{
+				inputFilePathTextBox.Text = inputFileDialog.FileName;
+			}
+		}
 	}
 }

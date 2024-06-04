@@ -4,38 +4,39 @@ using System.Text;
 
 namespace SlfToFit
 {
-	public class SlfToFitEncoder
+	public static class SlfToFitEncoder
 	{
-		private readonly Dictionary<string, FieldDescriptionMesg> DeveloperFields = [];
-		private DeveloperDataIdMesg? DeveloperDataIdMesg;
 
-		public void Encode(Slf slf, FileStream outputStream)
+		public static void Encode(Slf slf, string outputPath)
 		{
+			FileStream? fileStream = null;
 			Encode? encoder = null;
 			Dynastream.Fit.DateTime timeCreated = new(System.DateTime.Now);
 			Dynastream.Fit.DateTime timeStarted = new(slf.GeneralInformation.StartDate);
 			Dynastream.Fit.DateTime timeEnded = GlobalUtilities.AddSecondsToDynstreamDateTime(timeStarted, slf.GeneralInformation.ExcerciseTime);
-			CreateDeveloperDataFields();
+			DeveloperDataIdMesg developerDataIdMesg = CreateDeveloperDataIdMesg();
+			Dictionary<string, FieldDescriptionMesg> fieldDescriptionMesgs = CreateDeveloperDataFields();
 
 			// all messages
 			FileIdMesg fileIdMesg = CreateFileIdMesg(slf, timeCreated);
 			HrZoneMesg[] hrZoneMesgs = CreateHrZoneMesgs(slf);
 			PowerZoneMesg[] powerZoneMesgs = CreatePowerZoneMesgs(slf);
-			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf);
-			ActivityMesg activityMesg = CreateActivityMesg(slf);
+			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf, developerDataIdMesg, fieldDescriptionMesgs);
+			ActivityMesg activityMesg = CreateActivityMesg(slf, developerDataIdMesg, fieldDescriptionMesgs);
 			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted, timeEnded);
 			Mesg[] sessionAndEventMesgs = CreateSessionAndEventsMesgs(slf, timeStarted, timeEnded);
 
 			try
 			{
+				fileStream = new(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 				encoder = new(ProtocolVersion.V20);
-				encoder.Open(outputStream);
+				encoder.Open(fileStream);
 				
 				// the first message must be FileId
 				encoder.Write(fileIdMesg);
 				
 				// write the developer fields
-				WriteDeveloperDataFields(encoder);
+				WriteDeveloperDataFields(encoder, developerDataIdMesg, fieldDescriptionMesgs);
 
 				// write other general information
 				encoder.Write(hrZoneMesgs);
@@ -56,11 +57,11 @@ namespace SlfToFit
 			finally
 			{
 				encoder?.Close();
-				outputStream?.Close();
+				fileStream?.Close();
 			}
 		}
 
-		private FileIdMesg CreateFileIdMesg(Slf slf, Dynastream.Fit.DateTime timeCreated)
+		private static FileIdMesg CreateFileIdMesg(Slf slf, Dynastream.Fit.DateTime timeCreated)
 		{
 			FileIdMesg fileIdMesg = new();
 			fileIdMesg.SetType(Dynastream.Fit.File.Activity);
@@ -71,7 +72,7 @@ namespace SlfToFit
 			return fileIdMesg;
 		}
 
-		private HrZoneMesg[] CreateHrZoneMesgs(Slf slf)
+		private static HrZoneMesg[] CreateHrZoneMesgs(Slf slf)
 		{
 			(int hrValue, string name)[] values =
 				[
@@ -84,7 +85,7 @@ namespace SlfToFit
 			return values.Select(x => CreateHrZoneMesg(x.hrValue, x.name)).ToArray();
 		}
 
-		private HrZoneMesg CreateHrZoneMesg(int hrValue, string name)
+		private static HrZoneMesg CreateHrZoneMesg(int hrValue, string name)
 		{
 			HrZoneMesg hrZoneMesg = new();
 			hrZoneMesg.SetHighBpm((byte)hrValue);
@@ -92,7 +93,7 @@ namespace SlfToFit
 			return hrZoneMesg;
 		}
 
-		private PowerZoneMesg[] CreatePowerZoneMesgs(Slf slf)
+		private static PowerZoneMesg[] CreatePowerZoneMesgs(Slf slf)
 		{
 			(int powerValue, string name)[] values =
 				[
@@ -108,7 +109,7 @@ namespace SlfToFit
 			return values.Select(x => CreatePowerZoneMesg(x.powerValue, x.name)).ToArray();
 		}
 
-		private PowerZoneMesg CreatePowerZoneMesg(int powerValue, string name)
+		private static PowerZoneMesg CreatePowerZoneMesg(int powerValue, string name)
 		{
 			PowerZoneMesg powerZoneMesg = new();
 			powerZoneMesg.SetHighValue((ushort)powerValue);
@@ -116,9 +117,8 @@ namespace SlfToFit
 			return powerZoneMesg;
 		}
 
-		private void CreateDeveloperDataFields()
+		private static DeveloperDataIdMesg CreateDeveloperDataIdMesg()
 		{
-			// setup developerID
 			DeveloperDataIdMesg developerIdMesg = new();
 			byte[] appId = new Guid("b89b6d22-57bd-4d35-8063-99f06960c596").ToByteArray();
 			for (int i = 0; i < appId.Length; i++)
@@ -127,7 +127,11 @@ namespace SlfToFit
 			}
 			developerIdMesg.SetDeveloperDataIndex(0);
 			developerIdMesg.SetApplicationVersion(100);
-			DeveloperDataIdMesg = developerIdMesg;
+			return developerIdMesg;
+		}
+		private static Dictionary<string, FieldDescriptionMesg> CreateDeveloperDataFields()
+		{
+			Dictionary<string, FieldDescriptionMesg> fieldDescriptionMesgs = [];
 
 			// create guid field
 			FieldDescriptionMesg guidFieldDescriptionMesg = new();
@@ -135,7 +139,7 @@ namespace SlfToFit
 			guidFieldDescriptionMesg.SetFieldDefinitionNumber(0);
 			guidFieldDescriptionMesg.SetFitBaseTypeId(FitBaseType.String);
 			guidFieldDescriptionMesg.SetFieldName(0, "guid");
-			DeveloperFields.Add("guid", guidFieldDescriptionMesg);
+			fieldDescriptionMesgs.Add("guid", guidFieldDescriptionMesg);
 
 			// create serial number field
 			FieldDescriptionMesg serialNumberFieldDescriptionMesg = new();
@@ -143,33 +147,35 @@ namespace SlfToFit
 			serialNumberFieldDescriptionMesg.SetFieldDefinitionNumber(1);
 			serialNumberFieldDescriptionMesg.SetFitBaseTypeId(FitBaseType.String);
 			serialNumberFieldDescriptionMesg.SetFieldName(0, "serialnumber");
-			DeveloperFields.Add("serialnumber", serialNumberFieldDescriptionMesg);
+			fieldDescriptionMesgs.Add("serialnumber", serialNumberFieldDescriptionMesg);
+
+			return fieldDescriptionMesgs;
 		}
 
-		private void WriteDeveloperDataFields(Encode encoder)
+		private static void WriteDeveloperDataFields(Encode encoder, DeveloperDataIdMesg developerDataIdMesg, Dictionary<string, FieldDescriptionMesg> fieldDescriptionsMesgs)
 		{
-			encoder.Write(DeveloperDataIdMesg);
-			foreach (var item in DeveloperFields)
+			encoder.Write(developerDataIdMesg);
+			foreach (var item in fieldDescriptionsMesgs)
 			{
 				encoder.Write(item.Value);
 			}
 		}
 
-		private DeviceInfoMesg CreateDeviceInformationMesg(Slf slf)
+		private static DeviceInfoMesg CreateDeviceInformationMesg(Slf slf, DeveloperDataIdMesg developerDataIdMesg, Dictionary<string, FieldDescriptionMesg> fieldDescriptionMesgs)
 		{
 			DeviceInfoMesg devInfoMesg = new();
 			devInfoMesg.SetManufacturer(Manufacturer.Sigmasport);
 			devInfoMesg.SetProduct(slf.Computer.ProductId);
 
 			// custom serial number field
-			DeveloperField serialNumberField = new(DeveloperFields["serialnumber"], DeveloperDataIdMesg);
+			DeveloperField serialNumberField = new(fieldDescriptionMesgs["serialnumber"], developerDataIdMesg);
 			devInfoMesg.SetDeveloperField(serialNumberField);
 			serialNumberField.SetValue(Encoding.UTF8.GetBytes(slf.Computer.Serial));
 
 			return devInfoMesg;
 		}
 
-		private ActivityMesg CreateActivityMesg(Slf slf)
+		private static ActivityMesg CreateActivityMesg(Slf slf, DeveloperDataIdMesg developerDataIdMesg, Dictionary<string, FieldDescriptionMesg> fieldDescriptionMesgs)
 		{
 			ActivityMesg activityMesg = new();
 			activityMesg.SetNumSessions(1);
@@ -178,14 +184,14 @@ namespace SlfToFit
 			activityMesg.SetEventType(EventType.Stop);
 
 			// set guid for activity
-			DeveloperField guidField = new(DeveloperFields["guid"], DeveloperDataIdMesg);
+			DeveloperField guidField = new(fieldDescriptionMesgs["guid"], developerDataIdMesg);
 			activityMesg.SetDeveloperField(guidField);
 			guidField.SetValue(Encoding.UTF8.GetBytes(slf.GeneralInformation.GUID));
 
 			return activityMesg;
 		}
 
-		private SessionMesg CreateSessionMesg(Slf slf, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime)
+		private static SessionMesg CreateSessionMesg(Slf slf, Dynastream.Fit.DateTime startTime, Dynastream.Fit.DateTime endTime)
 		{
 			SessionMesg sessionMesg = new();
 			sessionMesg.SetMinHeartRate((byte)slf.GeneralInformation.MinimumHeartrate);
@@ -228,13 +234,12 @@ namespace SlfToFit
 			return sessionMesg;
 		}
 
-		//TODO: use pausetime with starttime and timestamp
-		private LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf, float timePaused, ushort index)
+		private static LapMesg CreateLapMesg(Marker lap, Dynastream.Fit.DateTime startingTime, Slf slf, float timePaused, ushort index)
 		{
 			LapMesg lapMesg = new();
 			lapMesg.SetEvent(Event.Lap);
 			lapMesg.SetEventType(EventType.Stop);
-			lapMesg.SetStartTime(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelativeStartingTime));
+			lapMesg.SetStartTime(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelativeStartingTime + timePaused));
 			lapMesg.SetEndPositionLat(lap.IntLatitude);
 			lapMesg.SetEndPositionLong(lap.IntLongitude);
 			lapMesg.SetTotalElapsedTime(lap.Duration + slf.GetLapTimePaused(lap));
@@ -248,13 +253,13 @@ namespace SlfToFit
 			lapMesg.SetTotalAscent(lap.AltitudeUphill);
 			lapMesg.SetTotalDescent(lap.AltitudeDownhill);
 			lapMesg.SetLapTrigger(lap.RelvativeEndingTime == slf.GeneralInformation.TrainingTime ? LapTrigger.SessionEnd : LapTrigger.Distance);
-			lapMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelvativeEndingTime));
+			lapMesg.SetTimestamp(GlobalUtilities.AddSecondsToDynstreamDateTime(startingTime, lap.RelvativeEndingTime + timePaused));
 			lapMesg.SetSport(slf.GeneralInformation.Sport);
 			lapMesg.SetMessageIndex(index);
 			return lapMesg;
 		}
 
-		private Mesg[] CreateSessionAndEventsMesgs(Slf slf, Dynastream.Fit.DateTime startingTime, Dynastream.Fit.DateTime endingTime)
+		private static Mesg[] CreateSessionAndEventsMesgs(Slf slf, Dynastream.Fit.DateTime startingTime, Dynastream.Fit.DateTime endingTime)
 		{
 			List<Mesg> messages = [];
 			int pauseIndex = 0;
@@ -311,7 +316,7 @@ namespace SlfToFit
 			return [.. messages];
 		}
 
-		private (EventMesg, EventMesg) CreatePauseMesg(Marker pauseMarker, Dynastream.Fit.DateTime startingTime, float timePaused)
+		private static (EventMesg, EventMesg) CreatePauseMesg(Marker pauseMarker, Dynastream.Fit.DateTime startingTime, float timePaused)
 		{
 			EventMesg startPauseMesg = new();
 			startPauseMesg.SetEvent(Event.Timer);
@@ -328,7 +333,7 @@ namespace SlfToFit
 			return (startPauseMesg, endPauseMesg);
 		}
 
-		private RecordMesg CreateRecordMesg(Entry entry, Dynastream.Fit.DateTime startingTime, float timePaused, ushort totalCalories, float totalDistance)
+		private static RecordMesg CreateRecordMesg(Entry entry, Dynastream.Fit.DateTime startingTime, float timePaused, ushort totalCalories, float totalDistance)
 		{
 			RecordMesg recordMesg = new();
 			recordMesg.SetPositionLat(entry.IntLatitude);

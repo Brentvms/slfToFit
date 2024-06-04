@@ -6,11 +6,11 @@ namespace SlfToFit
 {
 	public static class SlfParser
 	{
-		public static Slf? ParseSlf(FileStream fileStream)
+		public static Slf? ParseSlf(string filePath)
 		{
 			try
 			{
-				XDocument slf = XDocument.Load(fileStream);
+				XDocument slf = XDocument.Load(filePath);
 				XElement activityElement = GetRootElement(slf);
 				XElement computerElement = GetElement(activityElement, "Computer");
 				XElement generalInformationElement = GetElement(activityElement, "GeneralInformation");
@@ -56,8 +56,8 @@ namespace SlfToFit
 			string sport = GetElement(generalInformation, "sport").Value;
 			string guid = GetElement(generalInformation, "GUID").Value;
 			int age = int.Parse(GetElement(generalInformation, "age").Value);
-			ushort altitudeDifferencesDownhill = ushort.Parse(GetElement(generalInformation, "altitudeDifferencesDownhill").Value);
-			ushort altitudeDifferencesUphill = ushort.Parse(GetElement(generalInformation, "altitudeDifferencesUphill").Value);
+			ushort altitudeDifferencesDownhill = (ushort)(int.Parse(GetElement(generalInformation, "altitudeDifferencesDownhill").Value)/1000);
+			ushort altitudeDifferencesUphill = (ushort)(int.Parse(GetElement(generalInformation, "altitudeDifferencesUphill").Value)/1000);
 			int averageAltitude = int.Parse(GetElement(generalInformation, "averageAltitude").Value);
 			byte averageCadence = byte.Parse(GetElement(generalInformation, "averageCadence").Value);
 			byte averageHeartrate = byte.Parse(GetElement(generalInformation, "averageHeartrate").Value);

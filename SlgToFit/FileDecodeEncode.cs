@@ -2,37 +2,36 @@
 {
 	public class FileDecodeEncode
 	{
-		private FileStream? _inputFileStream;
+		private string? _inputFilePath;
 		public string? FileName { get; private set; }
-		private FileStream? _outputFileStream;
+		private string? _outputFilePath;
 
-		public void SetInputFile(FileStream inputFileStream, string fileName)
+		public void SetInputFile(string inputFileStream, string fileName)
 		{
-			_inputFileStream = inputFileStream;
-			FileName = fileName;
+			_inputFilePath = inputFileStream;
+			FileName = Path.GetFileNameWithoutExtension(fileName);
 		}
 
-		public void SetOutputFile(FileStream outputFileStream)
+		public void SetOutputFile(string outputFilePath)
 		{
-			_outputFileStream = outputFileStream;
+			_outputFilePath = outputFilePath;
 		}
 
 		public void RunDecodeEncode()
 		{
-			if (_inputFileStream == null || _outputFileStream == null)
+			if (_inputFilePath == null || _outputFilePath == null)
 			{
 				Console.Error.WriteLine("Not all values are initialized yet");
 				return;
 			}
 
-			Slf? slf = SlfParser.ParseSlf(_inputFileStream);
+			Slf? slf = SlfParser.ParseSlf(_inputFilePath);
 			if (slf == null)
 			{
 				Console.Error.WriteLine("Parsing slf failed.");
 				return;
 			}
-			SlfToFitEncoder encoder = new SlfToFitEncoder();
-			encoder.Encode(slf, _outputFileStream);
+			SlfToFitEncoder.Encode(slf, _outputFilePath);
 		}
 	}
 }

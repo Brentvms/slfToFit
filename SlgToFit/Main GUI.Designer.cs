@@ -40,10 +40,18 @@
 			outputFileDialog = new SaveFileDialog();
 			startButton = new Button();
 			topInputs = new Panel();
+			defaultInputFilePath = new FlowLayoutPanel();
+			defaultInputFileLabel = new Label();
+			defaultInputFilePathTextbox = new TextBox();
+			defaultOutputFilePath = new FlowLayoutPanel();
+			defaultOutputFileLabel = new Label();
+			defaultOutputFilePathTextbox = new TextBox();
 			outputTextBox = new RichTextBox();
 			inputContainer.SuspendLayout();
 			outputContainer.SuspendLayout();
 			topInputs.SuspendLayout();
+			defaultInputFilePath.SuspendLayout();
+			defaultOutputFilePath.SuspendLayout();
 			SuspendLayout();
 			// 
 			// inputContainer
@@ -153,14 +161,78 @@
 			// 
 			// topInputs
 			// 
+			topInputs.Controls.Add(defaultInputFilePath);
 			topInputs.Controls.Add(inputContainer);
 			topInputs.Controls.Add(outputContainer);
+			topInputs.Controls.Add(defaultOutputFilePath);
 			topInputs.Controls.Add(startButton);
 			topInputs.Dock = DockStyle.Top;
 			topInputs.Location = new Point(0, 0);
 			topInputs.Name = "topInputs";
-			topInputs.Size = new Size(800, 118);
+			topInputs.Size = new Size(1465, 118);
 			topInputs.TabIndex = 7;
+			// 
+			// defaultInputFilePath
+			// 
+			defaultInputFilePath.Anchor = AnchorStyles.Right;
+			defaultInputFilePath.Controls.Add(defaultInputFileLabel);
+			defaultInputFilePath.Controls.Add(defaultInputFilePathTextbox);
+			defaultInputFilePath.Location = new Point(744, 3);
+			defaultInputFilePath.Name = "defaultInputFilePath";
+			defaultInputFilePath.RightToLeft = RightToLeft.No;
+			defaultInputFilePath.Size = new Size(676, 31);
+			defaultInputFilePath.TabIndex = 6;
+			// 
+			// defaultInputFileLabel
+			// 
+			defaultInputFileLabel.AutoSize = true;
+			defaultInputFileLabel.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			defaultInputFileLabel.Location = new Point(5, 5);
+			defaultInputFileLabel.Margin = new Padding(5, 5, 16, 5);
+			defaultInputFileLabel.Name = "defaultInputFileLabel";
+			defaultInputFileLabel.Size = new Size(174, 17);
+			defaultInputFileLabel.TabIndex = 1;
+			defaultInputFileLabel.Text = "Default input file destination:";
+			defaultInputFileLabel.TextAlign = ContentAlignment.MiddleCenter;
+			// 
+			// defaultInputFilePathTextbox
+			// 
+			defaultInputFilePathTextbox.Location = new Point(198, 3);
+			defaultInputFilePathTextbox.Name = "defaultInputFilePathTextbox";
+			defaultInputFilePathTextbox.PlaceholderText = "System file path";
+			defaultInputFilePathTextbox.Size = new Size(472, 23);
+			defaultInputFilePathTextbox.TabIndex = 2;
+			defaultInputFilePathTextbox.TextChanged += DefaultInputFilePathTextbox_TextChanged;
+			// 
+			// defaultOutputFilePath
+			// 
+			defaultOutputFilePath.Controls.Add(defaultOutputFileLabel);
+			defaultOutputFilePath.Controls.Add(defaultOutputFilePathTextbox);
+			defaultOutputFilePath.Location = new Point(744, 40);
+			defaultOutputFilePath.Name = "defaultOutputFilePath";
+			defaultOutputFilePath.Size = new Size(676, 31);
+			defaultOutputFilePath.TabIndex = 4;
+			// 
+			// defaultOutputFileLabel
+			// 
+			defaultOutputFileLabel.AutoSize = true;
+			defaultOutputFileLabel.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			defaultOutputFileLabel.Location = new Point(5, 5);
+			defaultOutputFileLabel.Margin = new Padding(5);
+			defaultOutputFileLabel.Name = "defaultOutputFileLabel";
+			defaultOutputFileLabel.Size = new Size(185, 17);
+			defaultOutputFileLabel.TabIndex = 1;
+			defaultOutputFileLabel.Text = "Default Output file destination:";
+			defaultOutputFileLabel.TextAlign = ContentAlignment.MiddleCenter;
+			// 
+			// defaultOutputFilePathTextbox
+			// 
+			defaultOutputFilePathTextbox.Location = new Point(198, 3);
+			defaultOutputFilePathTextbox.Name = "defaultOutputFilePathTextbox";
+			defaultOutputFilePathTextbox.PlaceholderText = "System file path";
+			defaultOutputFilePathTextbox.Size = new Size(472, 23);
+			defaultOutputFilePathTextbox.TabIndex = 2;
+			defaultOutputFilePathTextbox.TextChanged += DefaultOutputFilePathTextbox_TextChanged;
 			// 
 			// outputTextBox
 			// 
@@ -169,7 +241,7 @@
 			outputTextBox.Name = "outputTextBox";
 			outputTextBox.ReadOnly = true;
 			outputTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-			outputTextBox.Size = new Size(800, 332);
+			outputTextBox.Size = new Size(1465, 564);
 			outputTextBox.TabIndex = 8;
 			outputTextBox.Text = "";
 			// 
@@ -177,7 +249,7 @@
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(800, 450);
+			ClientSize = new Size(1465, 682);
 			Controls.Add(outputTextBox);
 			Controls.Add(topInputs);
 			Name = "Main_GUI";
@@ -187,6 +259,10 @@
 			outputContainer.ResumeLayout(false);
 			outputContainer.PerformLayout();
 			topInputs.ResumeLayout(false);
+			defaultInputFilePath.ResumeLayout(false);
+			defaultInputFilePath.PerformLayout();
+			defaultOutputFilePath.ResumeLayout(false);
+			defaultOutputFilePath.PerformLayout();
 			ResumeLayout(false);
 		}
 
@@ -205,5 +281,11 @@
 		private Button startButton;
 		private Panel topInputs;
 		private RichTextBox outputTextBox;
+		private FlowLayoutPanel defaultInputFilePath;
+		private Label defaultInputFileLabel;
+		private TextBox defaultInputFilePathTextbox;
+		private FlowLayoutPanel defaultOutputFilePath;
+		private Label defaultOutputFileLabel;
+		private TextBox defaultOutputFilePathTextbox;
 	}
 }

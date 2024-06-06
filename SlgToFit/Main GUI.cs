@@ -7,8 +7,17 @@ namespace SlfToFit
 		public Main_GUI()
 		{
 			InitializeComponent();
+			FormLoad();
 			_loggingService = new(outputTextBox);
 			_fileDecodeEncode = new(_loggingService);
+		}
+
+		private void FormLoad()
+		{
+			defaultInputFilePathTextbox.Text = Properties.Settings.Default.DefaultDocFolderLoad;
+			inputFileDialog.InitialDirectory = Properties.Settings.Default.DefaultDocFolderLoad;
+			defaultOutputFilePathTextbox.Text = Properties.Settings.Default.DefaultDocFolderSave;
+			outputFileDialog.InitialDirectory = Properties.Settings.Default.DefaultDocFolderSave;
 		}
 
 		private void BrowseInputButton_Click(object sender, EventArgs e)
@@ -46,6 +55,20 @@ namespace SlfToFit
 				_fileDecodeEncode = new(_loggingService);
 				_loggingService.WriteInfoLine("You can encode another file, or close the application now.");
 			}
+		}
+
+		private void DefaultInputFilePathTextbox_TextChanged(object sender, EventArgs e)
+		{
+			string newDir = defaultInputFilePathTextbox.Text;
+			Properties.Settings.Default.DefaultDocFolderLoad = newDir;
+			inputFileDialog.InitialDirectory = newDir;
+		}
+
+		private void DefaultOutputFilePathTextbox_TextChanged(object sender, EventArgs e)
+		{
+			string newDir = defaultOutputFilePathTextbox.Text;
+			Properties.Settings.Default.DefaultDocFolderSave = newDir;
+			outputFileDialog.InitialDirectory = newDir;
 		}
 	}
 }

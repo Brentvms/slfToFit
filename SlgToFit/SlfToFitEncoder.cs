@@ -7,8 +7,10 @@ namespace SlfToFit
 	public static class SlfToFitEncoder
 	{
 
-		public static void Encode(Slf slf, string outputPath)
+		public static void Encode(Slf slf, string outputPath, LoggingService loggingService)
 		{
+			loggingService.WriteInfoLine("Start encoding .fit file");
+
 			FileStream? fileStream = null;
 			Encode? encoder = null;
 			Dynastream.Fit.DateTime timeCreated = new(System.DateTime.Now);
@@ -24,35 +26,46 @@ namespace SlfToFit
 			DeviceInfoMesg deviceInfoMesg = CreateDeviceInformationMesg(slf, developerDataIdMesg, fieldDescriptionMesgs);
 			ActivityMesg activityMesg = CreateActivityMesg(slf, developerDataIdMesg, fieldDescriptionMesgs);
 			SessionMesg sessionMesg = CreateSessionMesg(slf, timeStarted, timeEnded);
-			Mesg[] sessionAndEventMesgs = CreateSessionAndEventsMesgs(slf, timeStarted, timeEnded);
+			Mesg[] recordAndEventMesgs = CreateRecordAndEventsMesgs(slf, timeStarted, timeEnded);
 
 			try
 			{
+				loggingService.WriteInfoLine("Opening filestream");
 				fileStream = new(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 				encoder = new(ProtocolVersion.V20);
 				encoder.Open(fileStream);
-				
+
+				loggingService.WriteInfoLine("Write fields");
+				loggingService.WriteInfoLine("	FileIdMesg");
 				// the first message must be FileId
 				encoder.Write(fileIdMesg);
-				
+
+				loggingService.WriteInfoLine("	DataDeveloperFields");
 				// write the developer fields
 				WriteDeveloperDataFields(encoder, developerDataIdMesg, fieldDescriptionMesgs);
 
 				// write other general information
+				loggingService.WriteInfoLine("	HrZoneMesgs");
 				encoder.Write(hrZoneMesgs);
+				loggingService.WriteInfoLine("	PowerZoneMesgs");
 				encoder.Write(powerZoneMesgs);
+				loggingService.WriteInfoLine("	DeviceInfoMesg");
 				encoder.Write(deviceInfoMesg);
-				foreach(var mesg in sessionAndEventMesgs)
+				loggingService.WriteInfoLine("	Record- and EventMesgs");
+				foreach(var mesg in recordAndEventMesgs)
 				{
 					encoder.Write(mesg);
 				}
+				loggingService.WriteInfoLine("	SessionMesg");
 				encoder.Write(sessionMesg);
+				loggingService.WriteInfoLine("	ActivityMesg");
 				encoder.Write(activityMesg);
+				loggingService.WriteInfoLine("All fields are written. File is successfully encoded");
 			}
 			catch(Exception ex)
 			{
-				Console.WriteLine(ex);
-				Console.ReadLine();
+				loggingService.WriteErrorLine("Exception:");
+				loggingService.WriteErrorLine(ex);
 			}
 			finally
 			{
@@ -259,7 +272,7 @@ namespace SlfToFit
 			return lapMesg;
 		}
 
-		private static Mesg[] CreateSessionAndEventsMesgs(Slf slf, Dynastream.Fit.DateTime startingTime, Dynastream.Fit.DateTime endingTime)
+		private static Mesg[] CreateRecordAndEventsMesgs(Slf slf, Dynastream.Fit.DateTime startingTime, Dynastream.Fit.DateTime endingTime)
 		{
 			List<Mesg> messages = [];
 			int pauseIndex = 0;

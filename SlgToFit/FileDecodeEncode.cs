@@ -1,10 +1,11 @@
 ﻿namespace SlfToFit
 {
-	public class FileDecodeEncode
+	public class FileDecodeEncode(LoggingService loggingService)
 	{
 		private string? _inputFilePath;
 		public string? FileName { get; private set; }
 		private string? _outputFilePath;
+		private LoggingService _loggingService = loggingService;
 
 		public void SetInputFile(string inputFileStream, string fileName)
 		{
@@ -17,21 +18,22 @@
 			_outputFilePath = outputFilePath;
 		}
 
-		public void RunDecodeEncode()
+		public bool RunDecodeEncode()
 		{
 			if (_inputFilePath == null || _outputFilePath == null)
 			{
-				Console.Error.WriteLine("Not all values are initialized yet");
-				return;
+				_loggingService.WriteErrorLine("Not all paths are initialized yet");
+				return false;
 			}
 
-			Slf? slf = SlfParser.ParseSlf(_inputFilePath);
+			Slf? slf = SlfParser.ParseSlf(_inputFilePath, _loggingService);
 			if (slf == null)
 			{
-				Console.Error.WriteLine("Parsing slf failed.");
-				return;
+				_loggingService.WriteErrorLine("Parsing slf failed.");
+				return false;
 			}
-			SlfToFitEncoder.Encode(slf, _outputFilePath);
+			SlfToFitEncoder.Encode(slf, _outputFilePath, _loggingService);
+			return true;
 		}
 	}
 }

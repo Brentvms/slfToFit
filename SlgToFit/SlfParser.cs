@@ -6,36 +6,56 @@ namespace SlfToFit
 {
 	public static class SlfParser
 	{
-		public static Slf? ParseSlf(string filePath)
+		public static Slf? ParseSlf(string filePath, LoggingService loggingService)
 		{
 			try
 			{
+				loggingService.WriteInfoLine("Load xml file");
 				XDocument slf = XDocument.Load(filePath);
-				XElement activityElement = GetRootElement(slf);
-				XElement computerElement = GetElement(activityElement, "Computer");
-				XElement generalInformationElement = GetElement(activityElement, "GeneralInformation");
-				XElement entriesElement = GetElement(activityElement, "Entries");
-				XElement markerElement = GetElement(activityElement, "Markers");
 
+				loggingService.WriteInfoLine("Retrieving elements from xml:");
+				loggingService.WriteInfoLine("	Activity");
+				XElement activityElement = GetRootElement(slf);
+				loggingService.WriteInfoLine("	Computer");
+				XElement computerElement = GetElement(activityElement, "Computer");
+				loggingService.WriteInfoLine("	GeneralInformation");
+				XElement generalInformationElement = GetElement(activityElement, "GeneralInformation");
+				loggingService.WriteInfoLine("	Entries");
+				XElement entriesElement = GetElement(activityElement, "Entries");
+				loggingService.WriteInfoLine("	Markers");
+				XElement markerElement = GetElement(activityElement, "Markers");
+				loggingService.WriteInfoLine("Successfully retrieved xml elements");
+
+				loggingService.WriteInfoLine("Parsing retrieved xml fields:");
+				loggingService.WriteInfoLine("	Filedate");
 				DateTime fileDate = GlobalUtilities.SlgDateToDateTime(GetAttribute(activityElement, "fileDate").Value);
+				loggingService.WriteInfoLine("	Revision");
 				int revision = int.Parse(GetAttribute(activityElement, "revision").Value);
+				loggingService.WriteInfoLine("	Computer");
 				Computer computer = XmlToComputer(computerElement);
+				loggingService.WriteInfoLine("	GeneralInformation");
 				GeneralInformation generalInformation = XmlToGeneralInformation(generalInformationElement);
+				loggingService.WriteInfoLine("	Entries");
 				Entry[] entries = XmlToEntries(entriesElement);
+				loggingService.WriteInfoLine("	Marker");
 				Marker[] markers = XmlToMarkers(markerElement);
+				loggingService.WriteInfoLine("Successfully parsed retrieved xml fields");
 				return new Slf(fileDate, revision, computer, generalInformation, entries, markers);
 			}
 			catch(FileNotFoundException ex)
 			{
-				Console.Error.WriteLine(ex);
+				loggingService.WriteErrorLine("FileNotFoundException:");
+				loggingService.WriteErrorLine(ex);
 			}
 			catch(InvalidOperationException ex)
 			{
-				Console.Error.WriteLine(ex);
+				loggingService.WriteErrorLine("InvalidOperationException:");
+				loggingService.WriteErrorLine(ex);
 			}
 			catch (Exception ex)
-			{ 
-				Console.Error.WriteLine(ex);
+			{
+				loggingService.WriteErrorLine("Exception:");
+				loggingService.WriteErrorLine(ex);
 			}
 			// if try catch fails return null
 			return null;

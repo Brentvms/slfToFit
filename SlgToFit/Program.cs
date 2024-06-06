@@ -12,7 +12,7 @@ namespace SlfToFit
 		{
 			CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 			ApplicationConfiguration.Initialize();
-			Application.Run(new Form1());
+			Application.Run(new Main_GUI());
 		}
 	}
 }

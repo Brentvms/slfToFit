@@ -1,6 +1,6 @@
 ﻿namespace SlfToFit
 {
-	partial class Form1
+	partial class Main_GUI
 	{
 		/// <summary>
 		///  Required designer variable.
@@ -39,8 +39,11 @@
 			browseOutputButton = new Button();
 			outputFileDialog = new SaveFileDialog();
 			startButton = new Button();
+			topInputs = new Panel();
+			outputTextBox = new RichTextBox();
 			inputContainer.SuspendLayout();
 			outputContainer.SuspendLayout();
+			topInputs.SuspendLayout();
 			SuspendLayout();
 			// 
 			// inputContainer
@@ -48,7 +51,7 @@
 			inputContainer.Controls.Add(inputLabel);
 			inputContainer.Controls.Add(inputFilePathTextBox);
 			inputContainer.Controls.Add(browseInputButton);
-			inputContainer.Location = new Point(12, 12);
+			inputContainer.Location = new Point(3, 3);
 			inputContainer.Name = "inputContainer";
 			inputContainer.Size = new Size(718, 31);
 			inputContainer.TabIndex = 0;
@@ -96,7 +99,7 @@
 			outputContainer.Controls.Add(outputLabel);
 			outputContainer.Controls.Add(outputFilePathTextBox);
 			outputContainer.Controls.Add(browseOutputButton);
-			outputContainer.Location = new Point(12, 49);
+			outputContainer.Location = new Point(3, 40);
 			outputContainer.Name = "outputContainer";
 			outputContainer.Size = new Size(718, 31);
 			outputContainer.TabIndex = 4;
@@ -140,7 +143,7 @@
 			// 
 			// startButton
 			// 
-			startButton.Location = new Point(12, 86);
+			startButton.Location = new Point(3, 77);
 			startButton.Name = "startButton";
 			startButton.Size = new Size(105, 39);
 			startButton.TabIndex = 5;
@@ -148,20 +151,42 @@
 			startButton.UseVisualStyleBackColor = true;
 			startButton.Click += StartButton_Click;
 			// 
-			// Form1
+			// topInputs
+			// 
+			topInputs.Controls.Add(inputContainer);
+			topInputs.Controls.Add(outputContainer);
+			topInputs.Controls.Add(startButton);
+			topInputs.Dock = DockStyle.Top;
+			topInputs.Location = new Point(0, 0);
+			topInputs.Name = "topInputs";
+			topInputs.Size = new Size(800, 118);
+			topInputs.TabIndex = 7;
+			// 
+			// outputTextBox
+			// 
+			outputTextBox.Dock = DockStyle.Fill;
+			outputTextBox.Location = new Point(0, 118);
+			outputTextBox.Name = "outputTextBox";
+			outputTextBox.ReadOnly = true;
+			outputTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
+			outputTextBox.Size = new Size(800, 332);
+			outputTextBox.TabIndex = 8;
+			outputTextBox.Text = "";
+			// 
+			// Main_GUI
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
-			Controls.Add(startButton);
-			Controls.Add(inputContainer);
-			Controls.Add(outputContainer);
-			Name = "Form1";
-			Text = "Form1";
+			Controls.Add(outputTextBox);
+			Controls.Add(topInputs);
+			Name = "Main_GUI";
+			Text = ".slf to .fit converter";
 			inputContainer.ResumeLayout(false);
 			inputContainer.PerformLayout();
 			outputContainer.ResumeLayout(false);
 			outputContainer.PerformLayout();
+			topInputs.ResumeLayout(false);
 			ResumeLayout(false);
 		}
 
@@ -178,5 +203,7 @@
 		private Button browseOutputButton;
 		private SaveFileDialog outputFileDialog;
 		private Button startButton;
+		private Panel topInputs;
+		private RichTextBox outputTextBox;
 	}
 }

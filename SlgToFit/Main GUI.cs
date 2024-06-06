@@ -1,9 +1,9 @@
 namespace SlfToFit
 {
-	public partial class Form1 : Form
+	public partial class Main_GUI : Form
 	{
 		private FileDecodeEncode _fileDecodeEncode;
-		public Form1()
+		public Main_GUI()
 		{
 			InitializeComponent();
 			_fileDecodeEncode = new FileDecodeEncode();
@@ -33,7 +33,7 @@ namespace SlfToFit
 			}
 			else
 			{
-				Console.Error.WriteLine("Unable to open file");
+				WriteErrorLine("Unable to open file");
 			}
 		}
 
@@ -41,6 +41,35 @@ namespace SlfToFit
 		{
 			_fileDecodeEncode.RunDecodeEncode();
 			_fileDecodeEncode = new();
+		}
+
+		public void WriteInfoLine(string text)
+		{
+			AppendTextOutput(text, null);
+		}
+
+		public void WriteErrorLine(string text)
+		{
+			AppendTextOutput(text, Color.Red);
+		}
+
+		private void AppendTextOutput(string text, Color? color)
+		{
+			if (outputTextBox.InvokeRequired)
+			{
+				outputTextBox.Invoke(new Action(() => AppendTextOutput(text, color)));
+			}
+			else
+			{
+				outputTextBox.SelectionStart = outputTextBox.TextLength;
+				outputTextBox.SelectionLength = 0;
+				if (color != null)
+				{
+					outputTextBox.SelectionColor = color.Value;
+				}
+				outputTextBox.AppendText(text + '\n');
+				outputTextBox.SelectionColor = outputTextBox.ForeColor;
+			}
 		}
 	}
 }

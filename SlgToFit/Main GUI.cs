@@ -62,6 +62,7 @@ namespace SlfToFit
 			string newDir = defaultInputFilePathTextbox.Text;
 			Properties.Settings.Default.DefaultDocFolderLoad = newDir;
 			inputFileDialog.InitialDirectory = newDir;
+			Properties.Settings.Default.Save();
 		}
 
 		private void DefaultOutputFilePathTextbox_TextChanged(object sender, EventArgs e)
@@ -69,6 +70,7 @@ namespace SlfToFit
 			string newDir = defaultOutputFilePathTextbox.Text;
 			Properties.Settings.Default.DefaultDocFolderSave = newDir;
 			outputFileDialog.InitialDirectory = newDir;
+			Properties.Settings.Default.Save();
 		}
 	}
 }

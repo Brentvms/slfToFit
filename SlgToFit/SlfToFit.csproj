@@ -7,6 +7,14 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>False</UseWPF>
+    <AssemblyTitle>SlfToFitConverter</AssemblyTitle>
+    <AssemblyDescription>A program that converts .slf (Sigma Log Files) to .fit files</AssemblyDescription>
+    <AssemblyCompany>Vincent Kriek</AssemblyCompany>
+    <AssemblyProduct>SlfToFitConverter</AssemblyProduct>
+    <AssemblyCopyright>Copyright © 2024 Vincent Kriek</AssemblyCopyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0-alpha.1</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

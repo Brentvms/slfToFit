@@ -96,7 +96,7 @@ namespace SlfToFit
 			int bikeWeight = int.Parse(GetElement(generalInformation, "bikeWeight").Value);
 			int bodyHeight = int.Parse(GetElement(generalInformation, "bodyHeight").Value);
 			int bodyWeight = int.Parse(GetElement(generalInformation, "bodyWeight").Value);
-			bool calibration = bool.Parse(GetElement(generalInformation, "calibration").Value);
+			bool calibration = bool.Parse(TryGetElement(generalInformation, "calibration")?.Value ?? "false");
 			ushort calories = ushort.Parse(GetElement(generalInformation, "calories").Value);
 			string dataType = GetElement(generalInformation, "dataType").Value;
 			string description = GetElement(generalInformation, "description").Value;
@@ -114,7 +114,7 @@ namespace SlfToFit
 			float latitudeEnd = float.Parse(GetElement(generalInformation, "latitudeEnd").Value);
 			float latitudeStart = float.Parse(GetElement(generalInformation, "latitudeStart").Value);
 			int linkedRouteId = int.Parse(GetElement(generalInformation, "linkedRouteId").Value);
-			int logVersion = int.Parse(GetElement(generalInformation, "logVersion").Value);
+			int logVersion = int.Parse(TryGetElement(generalInformation, "logVersion")?.Value ?? "400");
 			float longitudeEnd = float.Parse(GetElement(generalInformation, "longitudeEnd").Value);
 			float longitudeStart = float.Parse(GetElement(generalInformation, "longitudeStart").Value);
 			float manualTemperature = float.Parse(GetElement(generalInformation, "manualTemperature").Value);
@@ -193,7 +193,7 @@ namespace SlfToFit
 			float averageCadenceCalc = float.Parse(GetElement(generalInformation, "averageCadenceCalc").Value);
 			float averagePowerCalc = float.Parse(GetElement(generalInformation, "averagePowerCalc").Value);
 			string[] activityStatus = GetElement(generalInformation, "activityStatus").Value.Split(',');
-			bool activityTrackerDayComplete = bool.Parse(GetElement(generalInformation, "activityTrackerDayComplete").Value);
+			bool activityTrackerDayComplete = bool.Parse(TryGetElement(generalInformation, "activityTrackerDayComplete")?.Value ?? "false");
 			Dictionary<string, ulong> sharingInfo = JsonSerializer.Deserialize<Dictionary<string, string>>(GetElement(generalInformation, "sharingInfo").Value)?.ToDictionary(kvp => kvp.Key, kvp => ulong.Parse(kvp.Value)) ?? [];
 			return new GeneralInformation(
 				user,
@@ -364,7 +364,7 @@ namespace SlfToFit
 			int trainingTimeDownhill = int.Parse(GetAttribute(entry, "trainingTimeDownhill").Value);
 			int trainingTimeUphill = int.Parse(GetAttribute(entry, "trainingTimeUphill").Value);
 			float workInKJ = float.Parse(GetAttribute(entry, "workInKJ").Value);
-			bool isActive = GetAttribute(entry, "isActive").Value != "0";
+			bool isActive = TryGetAttribute(entry, "isActive")?.Value == "1";
 			int timeBelowIntensityZones = int.Parse(GetAttribute(entry, "timeBelowIntensityZones").Value);
 			int timeInIntensityZone1 = int.Parse(GetAttribute(entry, "timeInIntensityZone1").Value);
 			int timeInIntensityZone2 = int.Parse(GetAttribute(entry, "timeInIntensityZone2").Value);
@@ -434,44 +434,44 @@ namespace SlfToFit
 		}
 		private static Marker XmlToMarker(XElement marker)
 		{
-			int altitudeDownhill = int.Parse(GetAttribute(marker, "altitudeDownhill").Value);
-			int altitudeUphill = int.Parse(GetAttribute(marker, "altitudeUphill").Value);
-			int averageAltitude = int.Parse(GetAttribute(marker, "averageAltitude").Value);
-			byte averageCadence = byte.Parse(GetAttribute(marker, "averageCadence").Value);
-			byte averageHeartrate = byte.Parse(GetAttribute(marker, "averageHeartrate").Value);
-			float averageInclineDownhill = float.Parse(GetAttribute(marker, "averageInclineDownhill").Value);
-			float averageInclineUphill = float.Parse(GetAttribute(marker, "averageInclineUphill").Value);
-			ushort averagePower = ushort.Parse(GetAttribute(marker, "averagePower").Value);
-			float averageSpeed = float.Parse(GetAttribute(marker, "averageSpeed").Value);
-			ushort calories = ushort.Parse(GetAttribute(marker, "calories").Value);
+			int altitudeDownhill = int.Parse(TryGetAttribute(marker, "altitudeDownhill")?.Value ?? "0");
+			int altitudeUphill = int.Parse(TryGetAttribute(marker, "altitudeUphill")?.Value ?? "0");
+			int averageAltitude = int.Parse(TryGetAttribute(marker, "averageAltitude")?.Value ?? "0");
+			byte averageCadence = byte.Parse(TryGetAttribute(marker, "averageCadence")?.Value ?? "0");
+			byte averageHeartrate = byte.Parse(TryGetAttribute(marker, "averageHeartrate")?.Value ?? "0");
+			float averageInclineDownhill = float.Parse(TryGetAttribute(marker, "averageInclineDownhill")?.Value ?? "0");
+			float averageInclineUphill = float.Parse(TryGetAttribute(marker, "averageInclineUphill")?.Value ?? "0");
+			ushort averagePower = ushort.Parse(TryGetAttribute(marker, "averagePower")?.Value ?? "0");
+			float averageSpeed = float.Parse(TryGetAttribute(marker, "averageSpeed")?.Value ?? "0");
+			ushort calories = ushort.Parse(TryGetAttribute(marker, "calories")?.Value ?? "0");
 			string description = GetAttribute(marker, "description").Value;
 			float distance = float.Parse(GetAttribute(marker, "distance").Value);
 			float distanceAbsolute = float.Parse(GetAttribute(marker, "distanceAbsolute").Value);
 			int duration = int.Parse(GetAttribute(marker, "duration").Value);
-			bool fastLap = bool.Parse(GetAttribute(marker, "fastLap").Value);
+			bool fastLap = bool.Parse(TryGetAttribute(marker, "fastLap")?.Value ?? "false");
 			float latitude = float.Parse(GetAttribute(marker, "latitude").Value);
 			float longitude = float.Parse(GetAttribute(marker, "longitude").Value);
-			int maximumAltitude = int.Parse(GetAttribute(marker, "maximumAltitude").Value);
-			byte maximumCadence = byte.Parse(GetAttribute(marker, "maximumCadence").Value);
-			byte maximumHeartrate = byte.Parse(GetAttribute(marker, "maximumHeartrate").Value);
-			float maximumInclineDownhill = float.Parse(GetAttribute(marker, "maximumInclineDownhill").Value);
-			float maximumInclineUphill = float.Parse(GetAttribute(marker, "maximumInclineUphill").Value);
-			ushort maximumPower = ushort.Parse(GetAttribute(marker, "maximumPower").Value);
-			float maximumSpeed = float.Parse(GetAttribute(marker, "maximumSpeed").Value);
-			byte minimumHeartrate = byte.Parse(GetAttribute(marker, "minimumHeartrate").Value);
-			float minimumSpeed = float.Parse(GetAttribute(marker, "minimumSpeed").Value);
+			int maximumAltitude = int.Parse(TryGetAttribute(marker, "maximumAltitude")?.Value ?? "0");
+			byte maximumCadence = byte.Parse(TryGetAttribute(marker, "maximumCadence")?.Value ?? "0");
+			byte maximumHeartrate = byte.Parse(TryGetAttribute(marker, "maximumHeartrate")?.Value ?? "0");
+			float maximumInclineDownhill = float.Parse(TryGetAttribute(marker, "maximumInclineDownhill")?.Value ?? "0");
+			float maximumInclineUphill = float.Parse(TryGetAttribute(marker, "maximumInclineUphill")?.Value ?? "0");
+			ushort maximumPower = ushort.Parse(TryGetAttribute(marker, "maximumPower")?.Value ?? "0");
+			float maximumSpeed = float.Parse(TryGetAttribute(marker, "maximumSpeed")?.Value ?? "0");
+			byte minimumHeartrate = byte.Parse(TryGetAttribute(marker, "minimumHeartrate")?.Value ?? "0");
+			float minimumSpeed = float.Parse(TryGetAttribute(marker, "minimumSpeed")?.Value ?? "0");
 			int number = int.Parse(GetAttribute(marker, "number").Value);
 			int time = int.Parse(GetAttribute(marker, "time").Value);
 			int timeAbsolute = int.Parse(GetAttribute(marker, "timeAbsolute").Value);
 			string title = GetAttribute(marker, "title").Value;
 			string type = GetAttribute(marker, "type").Value;
-			ushort normalizedPower = ushort.Parse(GetAttribute(marker, "normalizedPower").Value);
-			float averageBalance = float.Parse(GetAttribute(marker, "averageBalance").Value);
-			int pedalingTime = int.Parse(GetAttribute(marker, "pedalingTime").Value);
-			float leftTorqueEffectivity = float.Parse(GetAttribute(marker, "leftTorqueEffectivity").Value);
-			float rightTorqueEffectivity = float.Parse(GetAttribute(marker, "rightTorqueEffectivity").Value);
-			float leftPedalingSmoothness = float.Parse(GetAttribute(marker, "leftPedalingSmoothness").Value);
-			float rightPedalingSmoothness = float.Parse(GetAttribute(marker, "rightPedalingSmoothness").Value);
+			ushort normalizedPower = ushort.Parse(TryGetAttribute(marker, "normalizedPower")?.Value ?? "0");
+			float averageBalance = float.Parse(TryGetAttribute(marker, "averageBalance")?.Value ?? "0");
+			int pedalingTime = int.Parse(TryGetAttribute(marker, "pedalingTime")?.Value ?? "0");
+			float leftTorqueEffectivity = float.Parse(TryGetAttribute(marker, "leftTorqueEffectivity")?.Value ?? "0");
+			float rightTorqueEffectivity = float.Parse(TryGetAttribute(marker, "rightTorqueEffectivity")?.Value ?? "0");
+			float leftPedalingSmoothness = float.Parse(TryGetAttribute(marker, "leftPedalingSmoothness")?.Value ?? "0");
+			float rightPedalingSmoothness = float.Parse(TryGetAttribute(marker, "rightPedalingSmoothness")?.Value ?? "0");
 			if(type == "l")
 			{
 				return new Lap(
@@ -582,11 +582,21 @@ namespace SlfToFit
 			XElement? newElement = element.Element(name);
 			return newElement ?? throw new InvalidOperationException($"The '{name}' element is not defined");
 		}
+		
+		private static XElement? TryGetElement(XElement element, string name)
+		{
+			return element.Element(name);
+		}
 
 		private static XAttribute GetAttribute(XElement element, string name)
 		{
 			XAttribute? attribute = element.Attribute(name);
 			return attribute ?? throw new InvalidOperationException($"The '{name}' attribute is not defined");
+		}
+
+		private static XAttribute? TryGetAttribute(XElement element, string name)
+		{
+			return element.Attribute(name);
 		}
 	}
 }
